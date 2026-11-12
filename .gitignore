@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+!.env.example
+
+# generated: onnxruntime-web runtime (copied by `npm install` postinstall)
+/public/ort/
+
+# generated: 83 MB on-device emotion model (scripts/export_emotion_model.py).
+# Host it on the Hugging Face Hub or commit it with Git LFS - see README.
+/public/models/
