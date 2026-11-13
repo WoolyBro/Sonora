@@ -102,6 +102,7 @@ export function ExperienceFlow() {
     setStage("analyzing");
     try {
       const a = await analyzeFeeling(text, { onStage: setProgress });
+      setAnalyzer("device");
       toReading(a);
     } catch (err) {
       setError(err instanceof AnalysisError ? err.message : "Something went wrong reading that. Try again, or pick a mood yourself.");

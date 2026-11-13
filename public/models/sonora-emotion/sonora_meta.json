@@ -24,5 +24,35 @@
     "CALM_PEACEFUL": 0.85
   },
   "max_len": 128,
-  "output": "sigmoid presence probabilities (multi-label), not calibrated intensity"
+  "output": "sigmoid presence probabilities (multi-label), not calibrated intensity",
+  "files": {
+    "config.json": {
+      "bytes": 1194,
+      "sha256": "03e1abaf074e591e7f1c4142c4699d2953e79d8b68f6768f75610b30df8f09b3"
+    },
+    "merges.txt": {
+      "bytes": 456318,
+      "sha256": "1ce1664773c50f3e0cc8842619a93edc4624525b728b188a9e0be33b7726adc5"
+    },
+    "onnx/model_quantized.onnx": {
+      "bytes": 83150159,
+      "sha256": "d709afbb797ec02fe8eda0d88272b00abce3a7a5b24995cebc139fae0eed3098"
+    },
+    "special_tokens_map.json": {
+      "bytes": 1015,
+      "sha256": "66715ae6a0dd4aff4fe228bcaaccac6e52c83fd0ba80992c2be7d0e43b362307"
+    },
+    "tokenizer.json": {
+      "bytes": 3558900,
+      "sha256": "ca14bc374ac4b23ba26396e94788eb92fa03e2b8a9405b792e47457baac297cd"
+    },
+    "tokenizer_config.json": {
+      "bytes": 1506,
+      "sha256": "4a12c6f429c27b63f45d4df052c9fd5a0cae0a7ddb42879f3f97bd2137bb9da9"
+    },
+    "vocab.json": {
+      "bytes": 798293,
+      "sha256": "ed19656ea1707df69134c4af35c8ceda2cc9860bf2c3495026153a133670ab5e"
+    }
+  }
 }

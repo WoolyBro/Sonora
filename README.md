@@ -190,7 +190,7 @@ Notes:
 | Symptom | Fix |
 | --- | --- |
 | Check-in says "Sonora's emotion model couldn't be loaded" | `public/models/sonora-emotion/` is missing from the deployment, or `NEXT_PUBLIC_EMOTION_MODEL_*` points somewhere else. |
-| On-device model never finishes loading | Open DevTools → Network: `sonora_meta.json`, `onnx/model_quantized.onnx` and `/ort/*.wasm` must return 200. Run `npm install` to restore `public/ort`. |
+| Model never finishes loading | DevTools → Console shows `[sonora] emotion model failed:` with the reason. `sonora_meta.json`, `onnx/model_quantized.onnx` and `/ort/*.wasm` must return 200; run `npm install` to restore `public/ort`. The worker downloads each model file once itself (CDNs like Vercel compress large files and drop `Content-Length`, which made transformers.js start duplicate downloads that failed with "network error"). |
 | `401 invalid_session` / sign-in link does nothing | The Supabase Site URL or redirect URLs don't include this origin. |
 | A track shows "isn't available right now" | Its `audio` path is wrong or the file is missing. `npm test` lists every missing file. |
 | Blur/glass surfaces look flat | They need `backdrop-filter` support. The CSS deliberately routes it through `--glass-filter` (see `globals.css`). |

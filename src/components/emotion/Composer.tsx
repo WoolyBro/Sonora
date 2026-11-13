@@ -24,7 +24,7 @@ export function AnalyzerNote({ status }: { status: AnalyzerStatus }) {
       </span>
     );
   }
-  return <span>Sonora&rsquo;s emotion model couldn&rsquo;t be loaded. Pick a mood below instead.</span>;
+  return <span>Couldn&rsquo;t reach Sonora&rsquo;s emotion model just now. Press Read my mood to try again, or pick a mood yourself.</span>;
 }
 
 export function Composer({
@@ -45,7 +45,9 @@ export function Composer({
   const ref = useRef<HTMLTextAreaElement>(null);
   const count = value.length;
   const over = count > MAX_INPUT_CHARS;
-  const canSubmit = value.trim().length >= 2 && !over && analyzer !== "none" && analyzer !== "checking";
+  // Never block on the availability check: pressing the button retries loading
+  // the model, and falls back to the mood picker if it still can't load.
+  const canSubmit = value.trim().length >= 2 && !over;
 
   return (
     <div className="mx-auto w-full max-w-3xl">

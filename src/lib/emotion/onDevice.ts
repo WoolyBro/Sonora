@@ -59,7 +59,9 @@ function call<T>(type: "load" | "analyze", text?: string): Promise<T> {
 /** Whether the model files are actually reachable (checked once per session). */
 export function isOnDeviceAvailable(): Promise<boolean> {
   if (typeof window === "undefined" || typeof Worker === "undefined") return Promise.resolve(false);
-  availability ??= fetch(MODEL_CONFIG.metaUrl, { method: "GET", cache: "force-cache" })
+  // "no-cache" revalidates with the server (cheap: ETag). Never "force-cache":
+  // a 404 stored before the model was deployed would otherwise be reused forever.
+  availability ??= fetch(MODEL_CONFIG.metaUrl, { method: "GET", cache: "no-cache" })
     .then((r) => r.ok)
     .catch(() => false)
     .then((ok) => {
