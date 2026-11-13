@@ -2,7 +2,6 @@ import { describe, expect, it, vi } from "vitest";
 
 import { buildAnalysis } from "@/lib/emotion/normalize";
 import { LibraryStore } from "@/lib/library/store";
-import { rateLimit, resetRateLimits } from "@/lib/server/rate-limit";
 
 class MemoryStorage implements Storage {
   private m = new Map<string, string>();
@@ -26,7 +25,7 @@ class MemoryStorage implements Storage {
   }
 }
 
-const analysis = buildAnalysis({ text: "work is crushing me today", scores: { STRESSED_OVERWHELMED: 0.9 }, source: "claude", intensity: 0.8, clarity: 0.9 });
+const analysis = buildAnalysis({ text: "work is crushing me today", scores: { STRESSED_OVERWHELMED: 0.9 }, source: "on-device" });
 
 describe("LibraryStore (guest mode)", () => {
   it("persists favourites, history and playlists to browser storage", () => {
@@ -103,18 +102,5 @@ describe("LibraryStore (guest mode)", () => {
     store.detachUser();
     expect(store.getState().favourites).toEqual([]);
     expect(store.getState().user).toBeNull();
-  });
-});
-
-describe("rateLimit", () => {
-  it("allows up to the limit within the window, then blocks with a retry time", () => {
-    resetRateLimits();
-    const t0 = 1_000_000;
-    for (let i = 0; i < 3; i++) expect(rateLimit("k", 3, 60_000, t0 + i).ok).toBe(true);
-    const blocked = rateLimit("k", 3, 60_000, t0 + 10);
-    expect(blocked.ok).toBe(false);
-    expect(blocked.retryAfterSeconds).toBeGreaterThan(0);
-    expect(rateLimit("k", 3, 60_000, t0 + 61_000).ok).toBe(true);
-    expect(rateLimit("other", 3, 60_000, t0 + 10).ok).toBe(true);
   });
 });

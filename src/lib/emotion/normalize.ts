@@ -83,13 +83,9 @@ export interface BuildInput {
   text: string;
   scores: Partial<Record<string, unknown>>;
   source: AnalysisSource;
-  /** Model-provided intensity (Claude). Omitted for the on-device model. */
+  /** Intensity the listener set by hand. Omitted for model readings, where it's estimated. */
   intensity?: number;
-  /** Model-provided clarity (Claude) — how clearly the text expresses a feeling. */
-  clarity?: number;
   explanation?: string;
-  offTopic?: boolean;
-  supportSuggested?: boolean;
 }
 
 const NO_SIGNAL = 0.15;
@@ -104,7 +100,6 @@ export function buildAnalysis(input: BuildInput): EmotionAnalysis {
   const fromText = input.source !== "manual";
   if (fromText && wordCount(input.text) < 3) flags.push("short_input");
   if (top < NO_SIGNAL) flags.push("no_signal");
-  if (input.offTopic) flags.push("off_topic");
 
   const secondary = ranked
     .slice(1)
@@ -118,34 +113,20 @@ export function buildAnalysis(input: BuildInput): EmotionAnalysis {
   let intensityNote: string;
   if (input.intensity !== undefined) {
     intensity = clamp01(input.intensity);
-    intensityNote = "Estimated by the language model from how strongly the feeling comes through.";
+    intensityNote = "You set this yourself.";
   } else {
     intensity = clamp01(0.3 + 0.4 * top + (secondary.length ? 0.05 : 0) + lexicalIntensity(input.text));
     intensityNote = "Estimated from the model's signal strength plus intensity words in your text. Adjust it if it feels off.";
   }
 
-  let confidence: number;
-  let confidenceNote: string;
-  switch (input.source) {
-    case "claude":
-      confidence = clamp01(input.clarity ?? top);
-      confidenceNote = "How clearly the language model thinks your words express a feeling. Self-rated, not calibrated.";
-      break;
-    case "on-device":
-      confidence = top;
-      confidenceNote = "The on-device model's probability for the top mood. It tends to run high, so treat it as a hint.";
-      break;
-    default:
-      confidence = 1;
-      confidenceNote = "You chose this mood yourself.";
-  }
+  const confidence = fromText ? top : 1;
+  const confidenceNote = fromText
+    ? "Sonora's emotion model's probability for the top mood. It tends to run high, so treat it as a hint."
+    : "You chose this mood yourself.";
 
   const uncertain =
-    input.source !== "manual" &&
-    (flags.includes("no_signal") ||
-      flags.includes("off_topic") ||
-      confidence < 0.45 ||
-      (flags.includes("short_input") && confidence < 0.7));
+    fromText &&
+    (flags.includes("no_signal") || confidence < 0.45 || (flags.includes("short_input") && confidence < 0.7));
 
   return {
     primaryEmotion: primary,
@@ -159,7 +140,7 @@ export function buildAnalysis(input: BuildInput): EmotionAnalysis {
     source: input.source,
     uncertain,
     flags,
-    supportSuggested: Boolean(input.supportSuggested) || (fromText && detectSupportNeed(input.text)),
+    supportSuggested: fromText && detectSupportNeed(input.text),
   };
 }
 

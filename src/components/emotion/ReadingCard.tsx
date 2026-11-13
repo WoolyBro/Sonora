@@ -16,8 +16,7 @@ export interface Draft {
 }
 
 const SOURCE_LABEL: Record<EmotionAnalysis["source"], string> = {
-  claude: "Read by a language model",
-  "on-device": "Read by Sonora's on-device model",
+  "on-device": "Read by Sonora's emotion model, on your device",
   manual: "Chosen by you",
 };
 

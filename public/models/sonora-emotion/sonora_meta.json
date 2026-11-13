@@ -1,0 +1,28 @@
+{
+  "source_checkpoint": "emotion_classifier_v2_v3",
+  "base_model": "j-hartmann/emotion-english-distilroberta-base",
+  "head_order": [
+    "LOW_SAD",
+    "ANXIOUS_WORRIED",
+    "ANGRY_FRUSTRATED",
+    "STRESSED_OVERWHELMED",
+    "NUMB_DISCONNECTED",
+    "POSITIVE_JOYFUL",
+    "AFFECTIONATE_CONNECTED",
+    "CALM_PEACEFUL"
+  ],
+  "masked_heads": [
+    "NUMB_DISCONNECTED"
+  ],
+  "thresholds": {
+    "LOW_SAD": 0.85,
+    "ANXIOUS_WORRIED": 0.9,
+    "ANGRY_FRUSTRATED": 0.55,
+    "STRESSED_OVERWHELMED": 0.75,
+    "POSITIVE_JOYFUL": 0.7,
+    "AFFECTIONATE_CONNECTED": 0.75,
+    "CALM_PEACEFUL": 0.85
+  },
+  "max_len": 128,
+  "output": "sigmoid presence probabilities (multi-label), not calibrated intensity"
+}

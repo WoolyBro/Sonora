@@ -1,12 +1,11 @@
 import type { Emotion, EmotionScores } from "./taxonomy";
 
 /** Which system produced a reading. Shown to the user, never hidden. */
-export type AnalysisSource = "claude" | "on-device" | "manual";
+export type AnalysisSource = "on-device" | "manual";
 
 export type AnalysisFlag =
   | "short_input"   // a few words — read with low confidence
   | "no_signal"     // nothing scored meaningfully
-  | "off_topic"     // text isn't about feelings (e.g. a factual question)
   | "mixed";        // two or more states are strongly present
 
 export interface EmotionAnalysis {
