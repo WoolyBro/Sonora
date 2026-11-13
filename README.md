@@ -56,8 +56,8 @@ One taxonomy (`src/lib/emotion/taxonomy.ts`) drives everything: `LOW_SAD`, `ANXI
 
 Check-ins are read **only by Sonora's own model**. No third-party AI service (ChatGPT, Claude, etc.) is involved, and the text never reaches any server.
 
-1. **Sonora's own classifier in the browser.** This is the DistilRoBERTa model trained in the sibling `emotion-music-ai` project (`emotion_classifier_v2_v3`), exported to **int8 ONNX (83 MB, down from 313 MB)** and run with transformers.js in a Web Worker. The text never leaves the device. The export script verifies the quantised model against the original. On the 197-message hand-written check-in set, both pick the right top emotion for **112/197 (57%)**. Known gaps, shown in the UI: the *Numb / Disconnected* head had no training data and is forced to 0, and scores run high, so confidence is labelled as a hint.
-   The model checkpoint was chosen from the eight trained in `emotion-music-ai/models/` because it scored best on the held-out check-in test set (62/100 top-1, vs 59/100 for `emotion_classifier_v2_stress_v1_resume`). The download starts in the background as soon as the listener begins typing, and the browser caches it afterwards.
+1. **Sonora's own classifier in the browser.** A DistilRoBERTa model (82M parameters), exported to **int8 ONNX (83 MB)** and run with transformers.js in a Web Worker. The text never leaves the device. It was trained in [`training/`](training/README.md): the careful GoEmotions + EmpatheticDialogues + Dreaddit mapping from the `emotion-music-ai` project, plus EmpatheticDialogues speakers' own opening lines and CARER "i feel …" posts relabelled for stress, calm and numbness, then **distilled from a 355M-parameter RoBERTa-large teacher**. On the 100 hand-written test check-ins it never saw: top-1 61/100 (previous model 62/100), mood-presence macro-F1 **0.536** (previous 0.436), and it detects *Numb / Disconnected* for the first time (F1 0.48, previously impossible).
+   Known gaps: numbness is caught when worded plainly ("i feel numb and empty") but usually missed when described indirectly ("food doesn't taste like much"), and probabilities run high, so confidence is labelled as a hint. The download starts in the background as soon as the listener begins typing, and the browser caches it afterwards.
 2. **Honest failure.** If the model can't load, the user is asked to pick a mood. Sonora never fabricates a reading.
 
 Shared post-processing (`normalize.ts`) applies the same rules whatever ran: secondary emotions (≥ 0.35 and ≥ half the primary, max 2), a *mixed* flag, an *uncertain* flag (no signal, low confidence, very short text) that switches the UI to "closest guess", and a self-harm phrase check that shows support resources. Intensity is estimated from the model's signal strength plus intensity words and labelled as such. Users can always correct mood and intensity.
@@ -126,8 +126,8 @@ With no env vars at all, Sonora runs in guest mode with its emotion model, the f
 The 83 MB model is **committed to the repo** in `public/models/sonora-emotion/`, so Vercel serves it straight from its CDN with no setup. (It's under GitHub's 100 MB per-file limit.) To regenerate it from a trained checkpoint:
 
 ```bash
-python scripts/export_emotion_model.py \
-  --model ../VS/Python/Music/emotion-music-ai/models/emotion_classifier_v2_v3 \
+training/.venv/bin/python scripts/export_emotion_model.py \
+  --model training/runs/student_v5 \
   --eval  ../VS/Python/Music/emotion-music-ai/data/annotations/checkin_eval_v1.csv \
   --out   public/models/sonora-emotion
 ```
@@ -200,7 +200,7 @@ Notes:
 ## Remaining limitations
 
 - **Sample music.** The library is generated placeholder audio. Replace it with real, licensed or original tracks. There are no vocal tracks yet, so the vocal filter is empty.
-- **On-device accuracy.** About 57% top-1 on in-domain check-ins, no numbness signal, overconfident probabilities. Readings are estimates the user can always correct. Training the numbness head and collecting more check-in data are the main ways to improve it.
+- **Emotion accuracy.** About 61% top-1 on unseen in-domain check-ins; numbness only when worded plainly; overconfident probabilities. Readings are estimates the user can always correct. The biggest remaining lever is more hand-labelled check-ins written the way users write (see `training/README.md`).
 - **Intensity** from the on-device path is a labelled heuristic, not a trained intensity model. There are no human-annotated intensity labels yet.
 - **Accounts** use magic links only, and cross-device sync is last-write-wins with no conflict resolution.
 - **Production check.** A Vercel deployment exists, but the emotion model's behaviour there should be re-checked after each deploy (see *Deploying to Vercel*).
