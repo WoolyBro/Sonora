@@ -36,9 +36,23 @@ export function WaveField({ className = "" }: { className?: string }) {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
 
+    // The waves swell and lean toward the pointer, then settle when it rests.
+    const pointer = { x: 0.5, y: 0.5, tx: 0.5, ty: 0.5, energy: 0 };
+    const onPointer = (e: PointerEvent) => {
+      const r = canvas.getBoundingClientRect();
+      pointer.tx = (e.clientX - r.left) / Math.max(1, r.width);
+      pointer.ty = (e.clientY - r.top) / Math.max(1, r.height);
+      pointer.energy = Math.min(1, pointer.energy + 0.12);
+    };
+    if (!reduced) window.addEventListener("pointermove", onPointer, { passive: true });
+
     const LAYERS = 9;
     const draw = (t: number) => {
       ctx.clearRect(0, 0, w, h);
+      pointer.x += (pointer.tx - pointer.x) * 0.06;
+      pointer.y += (pointer.ty - pointer.y) * 0.06;
+      pointer.energy *= 0.985;
+      const pull = (pointer.y - 0.55) * h * 0.18 * pointer.energy;
       const mid = h * 0.55;
       for (let i = 0; i < LAYERS; i++) {
         const p = i / (LAYERS - 1);
@@ -56,9 +70,11 @@ export function WaveField({ className = "" }: { className?: string }) {
         ctx.beginPath();
         for (let x = 0; x <= w; x += 6) {
           const nx = x / w;
-          const envelope = Math.sin(nx * Math.PI) ** 1.5;
+          const near = Math.exp(-((nx - pointer.x) ** 2) / 0.018) * pointer.energy;
+          const envelope = Math.sin(nx * Math.PI) ** 1.5 * (1 + 1.4 * near);
           const y =
             mid +
+            near * pull +
             (i - LAYERS / 2) * 7 +
             envelope * amp * Math.sin(nx * Math.PI * freq + t * speed * 6 + i * 0.6) +
             envelope * amp * 0.35 * Math.sin(nx * Math.PI * freq * 2.3 - t * speed * 4);
@@ -100,6 +116,7 @@ export function WaveField({ className = "" }: { className?: string }) {
       cancelAnimationFrame(raf);
       ro.disconnect();
       io.disconnect();
+      window.removeEventListener("pointermove", onPointer);
     };
   }, []);
 

@@ -16,6 +16,7 @@ import type { EmotionAnalysis, EmotionProfile } from "@/lib/emotion/types";
 import { library } from "@/lib/library/store";
 
 import { Composer, type AnalyzerStatus } from "./Composer";
+import { ListeningVisual } from "./ListeningVisual";
 import { MoodPicker } from "./MoodPicker";
 import { ReadingCard, type Draft } from "./ReadingCard";
 import { Recommendations } from "./Recommendations";
@@ -34,18 +35,24 @@ function Analyzing({ stage }: { stage: AnalyzeStage | null }) {
     label = "Reading on your device…";
   }
   return (
-    <div role="status" aria-live="polite" className="flex min-h-[50vh] flex-col items-center justify-center text-center">
-      <div className="relative h-28 w-28" aria-hidden="true">
-        <span className="breathe absolute inset-0 rounded-full bg-[var(--atmo-accent)] opacity-40 blur-2xl" />
-        <span className="breathe absolute inset-5 rounded-full bg-gradient-to-br from-[var(--atmo-accent)] to-[var(--atmo-3)]" style={{ animationDelay: "-1.2s" }} />
-      </div>
-      <p className="font-display mt-10 text-3xl">{label}</p>
-      {detail && <p className="mt-3 text-sm text-muted">{detail}</p>}
-      {stage?.kind === "device-loading" && stage.progress && (
-        <div className="mt-5 h-1 w-56 overflow-hidden rounded-full bg-white/10">
-          <div className="h-full bg-[var(--atmo-accent)] transition-[width]" style={{ width: `${stage.progress.progress}%` }} />
-        </div>
-      )}
+    <div role="status" aria-live="polite" className="flex min-h-[55vh] flex-col items-center justify-center text-center">
+      <ListeningVisual
+        className="h-64 w-64 sm:h-72 sm:w-72"
+        progress={stage?.kind === "device-loading" && stage.progress ? stage.progress.progress : null}
+      />
+      <AnimatePresence mode="wait">
+        <motion.p
+          key={label}
+          className="font-display mt-6 text-3xl"
+          initial={{ opacity: 0, y: 8, filter: "blur(6px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          exit={{ opacity: 0, y: -8, filter: "blur(6px)" }}
+          transition={{ duration: 0.4 }}
+        >
+          {label}
+        </motion.p>
+      </AnimatePresence>
+      {detail && <p className="mt-3 text-sm tabular-nums text-muted">{detail}</p>}
     </div>
   );
 }

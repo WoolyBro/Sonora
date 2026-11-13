@@ -1,7 +1,9 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { ArrowRight, Info, LifeBuoy, RotateCcw } from "lucide-react";
 
+import { CountUp, EASE_OUT, SplitWords, Stagger, StaggerItem } from "@/components/motion/Reveal";
 import { btn, chipState, cn } from "@/components/ui/styles";
 import { EMOTIONS, EMOTION_INFO, type Emotion } from "@/lib/emotion/taxonomy";
 import type { EmotionAnalysis } from "@/lib/emotion/types";
@@ -66,9 +68,10 @@ export function ReadingCard({
         </div>
       )}
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[1.15fr_1fr]">
+      <Stagger immediate stagger={0.15} className="mt-6 grid gap-6 lg:grid-cols-[1.15fr_1fr]">
         {/* The reading */}
-        <section aria-label="Reading" className="rounded-[2rem] bg-surface p-6 ring-1 ring-hairline sm:p-8">
+        <StaggerItem>
+        <section aria-label="Reading" className="h-full rounded-[2rem] bg-surface p-6 ring-1 ring-hairline sm:p-8">
           {analysis.uncertain && !edited ? (
             <div className="mb-6 rounded-2xl bg-white/[0.05] p-4 text-sm text-muted ring-1 ring-hairline">
               <strong className="font-semibold text-ink">This one&rsquo;s hard to read.</strong> The words didn&rsquo;t carry a clear feeling,
@@ -77,10 +80,23 @@ export function ReadingCard({
           ) : null}
 
           <div className="flex items-center gap-4">
-            <MoodOrb mood={draft.primary} className="h-14 w-14" />
+            {/* Re-keyed on the mood, so choosing another one replays the entrance. */}
+            <motion.span
+              key={draft.primary}
+              className="relative inline-flex"
+              initial={{ scale: 0.3, opacity: 0, rotate: -40 }}
+              animate={{ scale: 1, opacity: 1, rotate: 0 }}
+              transition={{ type: "spring", stiffness: 260, damping: 16, delay: 0.15 }}
+            >
+              <span aria-hidden="true" className="ripple absolute inset-0 rounded-full" style={{ background: info.accent }} />
+              <span aria-hidden="true" className="ripple absolute inset-0 rounded-full" style={{ background: info.accent, animationDelay: "0.25s" }} />
+              <MoodOrb mood={draft.primary} className="breathe-soft h-14 w-14" />
+            </motion.span>
             <div>
               <p className="text-sm text-muted">{analysis.uncertain && !edited ? "Closest guess" : "Primary emotion"}</p>
-              <h2 className="font-display text-3xl leading-tight sm:text-4xl">{info.label}</h2>
+              <h2 className="font-display text-3xl leading-tight sm:text-4xl">
+                <SplitWords key={draft.primary} text={info.label} delay={0.25} stagger={0.05} />
+              </h2>
             </div>
           </div>
 
@@ -89,14 +105,20 @@ export function ReadingCard({
             <div className="text-right">
               <p className="text-sm text-muted">Intensity</p>
               <p className="font-display text-5xl tabular-nums leading-none">
-                {pct}
+                <CountUp value={pct} duration={0.9} />
                 <span className="text-2xl text-muted">%</span>
               </p>
             </div>
           </div>
 
           {draft.secondary.length > 0 && (
-            <p className="mt-6 text-sm text-muted">
+            <motion.p
+              key={draft.secondary.join()}
+              className="mt-6 text-sm text-muted"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.35, ease: EASE_OUT }}
+            >
               Secondary signal{draft.secondary.length > 1 ? "s" : ""}:{" "}
               {draft.secondary.map((s, i) => (
                 <span key={s} className="text-ink">
@@ -104,7 +126,7 @@ export function ReadingCard({
                   {EMOTION_INFO[s].label}
                 </span>
               ))}
-            </p>
+            </motion.p>
           )}
 
           <p className="mt-5 text-lg leading-relaxed text-ink/90">{edited ? "Adjusted by you. Sonora will follow your lead." : analysis.explanation}</p>
@@ -121,11 +143,14 @@ export function ReadingCard({
               <p>{analysis.intensityNote}</p>
               {analysis.source !== "manual" && (
                 <ul className="space-y-1.5 pt-1" aria-label="All eight scores">
-                  {EMOTIONS.map((e) => (
+                  {EMOTIONS.map((e, i) => (
                     <li key={e} className="grid grid-cols-[9.5rem_1fr_2.5rem] items-center gap-3">
                       <span className="truncate text-xs text-muted">{EMOTION_INFO[e].label}</span>
                       <span className="h-1.5 overflow-hidden rounded-full bg-white/8">
-                        <span className="block h-full rounded-full" style={{ width: `${analysis.scores[e] * 100}%`, background: EMOTION_INFO[e].accent }} />
+                        <span
+                          className="bar-grow block h-full rounded-full"
+                          style={{ width: `${analysis.scores[e] * 100}%`, background: EMOTION_INFO[e].accent, animationDelay: `${i * 60}ms` }}
+                        />
                       </span>
                       <span className="text-right text-xs tabular-nums">{analysis.scores[e].toFixed(2)}</span>
                     </li>
@@ -134,17 +159,19 @@ export function ReadingCard({
               )}
               {analysis.source === "on-device" && (
                 <p>
-                  The on-device model has no training data for &ldquo;Numb / Disconnected&rdquo;, so it always scores 0 there. Pick it yourself if
-                  it fits.
+                  &ldquo;Numb / Disconnected&rdquo; is only picked up when it&rsquo;s put plainly (&ldquo;i feel numb&rdquo;, &ldquo;empty&rdquo;).
+                  If it fits in a quieter way, pick it yourself.
                 </p>
               )}
               <p>Scores are independent (0–1) and don&rsquo;t add up to 100%. This is an estimate, not a diagnosis.</p>
             </div>
           </details>
         </section>
+        </StaggerItem>
 
         {/* Adjust */}
-        <section aria-label="Adjust the reading" className="rounded-[2rem] bg-surface p-6 ring-1 ring-hairline sm:p-8">
+        <StaggerItem>
+        <section aria-label="Adjust the reading" className="h-full rounded-[2rem] bg-surface p-6 ring-1 ring-hairline sm:p-8">
           <h3 className="text-lg font-semibold">Not quite right?</h3>
           <p className="mt-1 text-sm text-muted">You know how you feel better than any model. Change anything before we pick music.</p>
 
@@ -222,16 +249,22 @@ export function ReadingCard({
             </div>
           )}
         </section>
-      </div>
+        </StaggerItem>
+      </Stagger>
 
-      <div className="mt-8 flex flex-wrap items-center gap-3">
+      <motion.div
+        className="mt-8 flex flex-wrap items-center gap-3"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.55, ease: EASE_OUT }}
+      >
         <button type="button" onClick={onConfirm} className={`${btn.primary} px-6 py-3 text-base`}>
           Find my sound <ArrowRight size={18} />
         </button>
         <button type="button" onClick={onRestart} className={btn.ghost}>
           <RotateCcw size={15} /> Start over
         </button>
-      </div>
+      </motion.div>
     </div>
   );
 }

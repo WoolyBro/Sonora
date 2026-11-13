@@ -46,6 +46,8 @@ export interface PlayerContextValue {
   clearQueue: () => void;
   setExpanded: (v: boolean) => void;
   setQueueOpen: (v: boolean) => void;
+  /** Exact playback position, read straight from the audio element (for per-frame visuals). */
+  getPlayhead: () => number;
 }
 
 export interface PlayerTime {
@@ -356,6 +358,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       },
       setExpanded,
       setQueueOpen,
+      getPlayhead: () => audioRef.current?.currentTime ?? 0,
     }),
     [queue, track, status, error, volume, muted, sourceLabel, expanded, queueOpen, playTracks, toggle, advance, prev, seek, setVolume],
   );

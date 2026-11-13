@@ -28,9 +28,12 @@ export function IntensityWave({ value, className = "" }: { value: number; classN
             <stop offset="100%" stopColor="var(--atmo-1)" stopOpacity="0.5" />
           </linearGradient>
         </defs>
-        <g style={{ transform: `translateY(${surface}px)`, transition: "transform 900ms cubic-bezier(0.22, 1, 0.36, 1)" }}>
-          <path d={wave(0)} fill={`url(#${id}-g)`} opacity="0.35" className="wave-drift-slow" />
-          <path d={wave(12)} fill={`url(#${id}-g)`} opacity="0.75" className="wave-drift" />
+        {/* Outer group: fills up from empty on mount. Inner: follows later changes. */}
+        <g className="wave-rise">
+          <g style={{ transform: `translateY(${surface}px)`, transition: "transform 900ms cubic-bezier(0.22, 1, 0.36, 1)" }}>
+            <path d={wave(0)} fill={`url(#${id}-g)`} opacity="0.35" className="wave-drift-slow" />
+            <path d={wave(12)} fill={`url(#${id}-g)`} opacity="0.75" className="wave-drift" />
+          </g>
         </g>
       </svg>
     </div>

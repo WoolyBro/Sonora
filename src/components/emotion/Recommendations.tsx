@@ -3,6 +3,7 @@
 import { Play, RotateCcw, SlidersHorizontal } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { Reveal, Stagger, StaggerItem } from "@/components/motion/Reveal";
 import { usePlayer } from "@/components/player/PlayerProvider";
 import { TrackCard } from "@/components/music/TrackItems";
 import { btn, chipState, cn } from "@/components/ui/styles";
@@ -35,10 +36,10 @@ function Rail({ title, subtitle, items, label, action }: { title: string; subtit
   return (
     <section aria-label={title} className="mt-14 first:mt-0">
       <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
-        <div>
+        <Reveal y={14}>
           <h2 className="font-display text-3xl sm:text-4xl">{title}</h2>
           <p className="mt-1.5 text-muted">{subtitle}</p>
-        </div>
+        </Reveal>
         <div className="flex flex-wrap items-center gap-2">
           {action}
           {tracks.length > 0 && (
@@ -53,11 +54,18 @@ function Rail({ title, subtitle, items, label, action }: { title: string; subtit
           Nothing in the library fits this direction yet. Add more tracks to the catalogue to fill it.
         </p>
       ) : (
-        <div className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-5 overflow-x-auto px-4 pb-4 sm:-mx-6 sm:px-6">
+        // Re-keyed on the picks, so switching calmer/brighter re-plays the cascade.
+        <Stagger
+          key={items.map((i) => i.track.id).join()}
+          stagger={0.07}
+          className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-5 overflow-x-auto px-4 pb-4 pt-2 sm:-mx-6 sm:px-6"
+        >
           {items.map((item, i) => (
-            <TrackCard key={item.track.id} track={item.track} reason={item.reason} onPlay={() => player.playTracks(tracks, i, label)} />
+            <StaggerItem key={item.track.id} className="shrink-0 snap-start">
+              <TrackCard track={item.track} reason={item.reason} onPlay={() => player.playTracks(tracks, i, label)} />
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
       )}
     </section>
   );

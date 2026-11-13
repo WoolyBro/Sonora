@@ -42,11 +42,21 @@ export function MoodPicker({
               aria-pressed={active}
               onClick={() => onChange(mood)}
               className={cn(
-                "group flex items-center gap-3 rounded-2xl p-3 text-left ring-1 transition",
+                "group flex items-center gap-3 rounded-2xl p-3 text-left ring-1 transition duration-300 active:scale-[0.98]",
                 active ? "bg-white/10 ring-white/30" : "bg-white/[0.03] ring-hairline hover:bg-white/[0.06]",
               )}
             >
-              <MoodOrb mood={mood} className={compact ? "h-7 w-7" : "h-9 w-9"} />
+              <span className="relative inline-flex">
+                {active && <span key={`${mood}-on`} aria-hidden="true" className="ripple absolute inset-0 rounded-full" style={{ background: info.accent }} />}
+                <MoodOrb
+                  mood={mood}
+                  className={cn(
+                    "transition-transform duration-500 ease-[var(--ease-soft)] group-hover:scale-110",
+                    active && "scale-110",
+                    compact ? "h-7 w-7" : "h-9 w-9",
+                  )}
+                />
+              </span>
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-medium">{info.label}</span>
                 {!compact && <span className="block truncate text-xs text-faint">{info.examples.slice(0, 3).join(", ")}</span>}
