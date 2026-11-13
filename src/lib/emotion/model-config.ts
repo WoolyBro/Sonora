@@ -9,14 +9,15 @@ const host = process.env.NEXT_PUBLIC_EMOTION_MODEL_HOST === "hub" ? "hub" : "loc
 const modelId = process.env.NEXT_PUBLIC_EMOTION_MODEL_ID || "sonora-emotion";
 const localPath = "/models/";
 
+/** Folder that holds sonora_meta.json, config.json, tokenizer files and onnx/. */
+const baseUrl = host === "hub" ? `https://huggingface.co/${modelId}/resolve/main/` : `${localPath}${modelId}/`;
+
 export const MODEL_CONFIG = {
   host,
   modelId,
   localPath,
-  metaUrl:
-    host === "hub"
-      ? `https://huggingface.co/${modelId}/resolve/main/sonora_meta.json`
-      : `${localPath}${modelId}/sonora_meta.json`,
+  baseUrl,
+  metaUrl: `${baseUrl}sonora_meta.json`,
   /** Approximate download size, shown before the first load. */
   approxSizeMb: 83,
 } as const;

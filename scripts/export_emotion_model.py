@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 import shutil
 from pathlib import Path
@@ -102,9 +103,22 @@ def export(model_dir: Path, out_dir: Path) -> Path:
         "thresholds": {MODEL_TO_SONORA[k]: v for k, v in training.get("thresholds", {}).items()},
         "max_len": MAX_LEN,
         "output": "sigmoid presence probabilities (multi-label), not calibrated intensity",
+        "files": file_manifest(out_dir),
     }
     (out_dir / "sonora_meta.json").write_text(json.dumps(meta, indent=2))
     return q8_path
+
+
+def file_manifest(out_dir: Path) -> dict:
+    """Byte size and SHA-256 of every shipped file. The browser uses the size for
+    download progress (CDNs often compress and drop Content-Length) and the hash
+    as its cache key, so a re-exported model is never served stale."""
+    files = {}
+    for path in sorted(out_dir.rglob("*")):
+        rel = path.relative_to(out_dir).as_posix()
+        if path.is_file() and rel not in ("sonora_meta.json", "export_report.json"):
+            files[rel] = {"bytes": path.stat().st_size, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+    return files
 
 
 def verify(model_dir: Path, q8_path: Path, eval_csv: Path | None, out_dir: Path) -> dict:

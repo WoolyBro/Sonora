@@ -50,8 +50,10 @@ export async function analyzeFeeling(
         (p) => onStage?.({ kind: "device-loading", progress: p }),
         () => onStage?.({ kind: "device-running" }),
       );
-    } catch {
-      // fall through to the honest failure below
+    } catch (err) {
+      // Logged so a failing deployment can be diagnosed from DevTools; the
+      // listener gets the honest failure below.
+      console.warn("[sonora] emotion model failed:", err);
     }
   }
 
