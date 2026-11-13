@@ -1,7 +1,7 @@
 {
-  "quantized_size_mb": 83.2,
-  "max_abs_prob_diff_vs_fp32": 0.296,
+  "quantized_size_mb": 83.1,
+  "max_abs_prob_diff_vs_fp32": 0.3339,
   "checkin_rows_scored": 197,
-  "top1_fp32": "112/197",
-  "top1_int8": "112/197"
+  "top1_fp32": "118/197",
+  "top1_int8": "116/197"
 }

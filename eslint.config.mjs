@@ -14,6 +14,7 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Vendored / generated assets
     "public/ort/**",
+    "training/**", // Python model training (its .venv ships vendored JS)
     "public/models/**",
   ]),
 ]);
