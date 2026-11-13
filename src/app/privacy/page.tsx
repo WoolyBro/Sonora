@@ -11,7 +11,7 @@ const SECTIONS = [
     h: "What happens to what you write",
     p: [
       "When you check in, your text is used once to estimate how you feel, and then discarded. Sonora does not log it, store it, or use it to train anything.",
-      "Depending on how this deployment is set up, the text is read either by a language model through Anthropic's API (sent over an encrypted connection from Sonora's server; Sonora does not store it), or by Sonora's own model running entirely inside your browser, in which case it never leaves your device. The check-in screen always tells you which one will be used, and you can choose \"on this device only\" in your library settings.",
+      "The text is read by Sonora's own emotion model, which runs entirely inside your browser. Your words never leave your device and are never sent to Sonora's server or to any third-party AI service. The model is downloaded once (about 83 MB) and then cached by your browser.",
       "Sonora screens for phrases about self-harm so it can show support resources. That check runs on the same text and is not stored either.",
     ],
   },

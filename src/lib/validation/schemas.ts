@@ -1,18 +1,9 @@
 import * as z from "zod";
 
-import { MAX_INPUT_CHARS } from "@/lib/emotion/normalize";
 import { EMOTIONS } from "@/lib/emotion/taxonomy";
 
 const EmotionEnum = z.enum(EMOTIONS);
 const unit = z.number().finite().min(0).max(1);
-
-export const AnalyzeRequestSchema = z
-  .object({
-    text: z.string().max(MAX_INPUT_CHARS * 2).optional().default(""),
-    selectedEmotion: EmotionEnum.optional(),
-    intensity: unit.optional(),
-  })
-  .strict();
 
 export const ProfileSchema = z.object({
   primaryEmotion: EmotionEnum,

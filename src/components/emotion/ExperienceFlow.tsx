@@ -7,7 +7,7 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import { useSetAtmosphere } from "@/components/layout/Atmosphere";
 import { btn } from "@/components/ui/styles";
 import { useLibrary } from "@/hooks/useLibrary";
-import { AnalysisError, analyzeFeeling, type AnalyzeStage } from "@/lib/emotion/client";
+import { AnalysisError, analyzeFeeling, warmUpModel, type AnalyzeStage } from "@/lib/emotion/client";
 import { manualAnalysis } from "@/lib/emotion/normalize";
 import { isOnDeviceAvailable } from "@/lib/emotion/onDevice";
 import { MODEL_CONFIG } from "@/lib/emotion/model-config";
@@ -26,7 +26,7 @@ function Analyzing({ stage }: { stage: AnalyzeStage | null }) {
   let label = "Listening to your words…";
   let detail: string | null = null;
   if (stage?.kind === "device-loading") {
-    label = "Warming up the on-device model…";
+    label = "Loading Sonora's emotion model…";
     detail = stage.progress
       ? `${Math.round(stage.progress.progress)}% of ${Math.round(stage.progress.total / 1e6) || MODEL_CONFIG.approxSizeMb} MB (one-time download)`
       : `About ${MODEL_CONFIG.approxSizeMb} MB, downloaded once and cached.`;
@@ -63,24 +63,23 @@ export function ExperienceFlow() {
   const [analyzer, setAnalyzer] = useState<AnalyzerStatus>("checking");
   const [journal, setJournal] = useState({ save: true, includeWords: false });
 
-  // Which analyser will run? (server model → on-device model → none)
+  // Are Sonora's own model files reachable?
   useEffect(() => {
     let cancelled = false;
-    (async () => {
-      let server = false;
-      if (prefs.analysis !== "device-only") {
-        server = await fetch("/api/emotion/analyze")
-          .then((r) => (r.ok ? r.json() : { serverAnalysis: false }))
-          .then((b) => Boolean(b.serverAnalysis))
-          .catch(() => false);
-      }
-      const device = server ? false : await isOnDeviceAvailable();
-      if (!cancelled) setAnalyzer(server ? "server" : device ? "device" : "none");
-    })();
+    isOnDeviceAvailable().then((ok) => {
+      if (!cancelled) setAnalyzer(ok ? "device" : "none");
+    });
     return () => {
       cancelled = true;
     };
-  }, [prefs.analysis]);
+  }, []);
+
+  // Start the one-time model download as soon as the listener starts writing,
+  // so the reading is ready (or nearly) by the time they press send.
+  const writing = text.trim().length > 0;
+  useEffect(() => {
+    if (writing && analyzer === "device") warmUpModel();
+  }, [writing, analyzer]);
 
   // Tint the room with the current reading; release it when the page is hidden.
   const mood = stage === "reading" || stage === "results" ? (draft?.primary ?? null) : null;
@@ -102,10 +101,7 @@ export function ExperienceFlow() {
     setProgress(null);
     setStage("analyzing");
     try {
-      const a = await analyzeFeeling(text, {
-        mode: analyzer === "device" ? "device-only" : prefs.analysis,
-        onStage: setProgress,
-      });
+      const a = await analyzeFeeling(text, { onStage: setProgress });
       toReading(a);
     } catch (err) {
       setError(err instanceof AnalysisError ? err.message : "Something went wrong reading that. Try again, or pick a mood yourself.");

@@ -15,7 +15,6 @@
     "model:export": "python3 scripts/export_emotion_model.py"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^1.8.0",
     "@huggingface/transformers": "^4.3.2",
     "@supabase/supabase-js": "^2.119.0",
     "framer-motion": "^14.12.0",

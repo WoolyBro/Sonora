@@ -55,7 +55,7 @@ create table if not exists public.mood_entries (
                         'NUMB_DISCONNECTED','POSITIVE_JOYFUL','AFFECTIONATE_CONNECTED','CALM_PEACEFUL')),
   secondary_emotions  text[] not null default '{}',
   intensity           real not null check (intensity between 0 and 1),
-  source              text not null check (source in ('claude','on-device','manual')),
+  source              text not null check (source in ('on-device','manual')),
   note                text check (char_length(note) <= 1200),   -- only if the user opts in
   created_at          timestamptz not null default now()
 );

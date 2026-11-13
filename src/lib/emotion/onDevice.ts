@@ -61,7 +61,11 @@ export function isOnDeviceAvailable(): Promise<boolean> {
   if (typeof window === "undefined" || typeof Worker === "undefined") return Promise.resolve(false);
   availability ??= fetch(MODEL_CONFIG.metaUrl, { method: "GET", cache: "force-cache" })
     .then((r) => r.ok)
-    .catch(() => false);
+    .catch(() => false)
+    .then((ok) => {
+      if (!ok) availability = null; // check again next time (e.g. after reconnecting)
+      return ok;
+    });
   return availability;
 }
 
@@ -79,8 +83,13 @@ export async function loadOnDeviceModel(onProgress?: (p: LoadProgress) => void):
   }
 }
 
-export async function analyzeOnDevice(text: string, onProgress?: (p: LoadProgress) => void): Promise<EmotionAnalysis> {
+export async function analyzeOnDevice(
+  text: string,
+  onProgress?: (p: LoadProgress) => void,
+  onRunning?: () => void,
+): Promise<EmotionAnalysis> {
   if (!ready) await loadOnDeviceModel(onProgress);
+  onRunning?.();
   const { scores } = await call<{ scores: Record<string, number> }>("analyze", text);
   return buildAnalysis({ text, scores, source: "on-device" });
 }

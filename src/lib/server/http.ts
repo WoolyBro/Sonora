@@ -23,8 +23,3 @@ export function validationError(err: z.ZodError): Response {
   const path = first?.path.join(".") || "body";
   return errorResponse(400, "invalid_request", `Invalid ${path}: ${first?.message ?? "bad value"}`);
 }
-
-export function clientKey(request: Request): string {
-  const fwd = request.headers.get("x-forwarded-for");
-  return (fwd?.split(",")[0] ?? request.headers.get("x-real-ip") ?? "anonymous").trim();
-}

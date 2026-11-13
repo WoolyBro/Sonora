@@ -26,21 +26,18 @@ describe("buildAnalysis", () => {
     const a = buildAnalysis({
       text: "Work is relentless and I keep worrying about tomorrow",
       scores: { STRESSED_OVERWHELMED: 0.82, ANXIOUS_WORRIED: 0.7, LOW_SAD: 0.2 },
-      source: "claude",
-      intensity: 0.78,
-      clarity: 0.87,
+      source: "on-device",
     });
     expect(a.primaryEmotion).toBe("STRESSED_OVERWHELMED");
     expect(a.secondaryEmotions).toEqual(["ANXIOUS_WORRIED"]);
     expect(a.flags).toContain("mixed");
-    expect(a.intensity).toBe(0.78);
-    expect(a.confidence).toBe(0.87);
+    expect(a.confidence).toBe(0.82);
     expect(a.uncertain).toBe(false);
   });
 
   it("clamps out-of-range intensity at both boundaries", () => {
-    const hi = buildAnalysis({ text: "a long enough sentence here", scores: { LOW_SAD: 0.9 }, source: "claude", intensity: 4, clarity: 0.9 });
-    const lo = buildAnalysis({ text: "a long enough sentence here", scores: { LOW_SAD: 0.9 }, source: "claude", intensity: -1, clarity: 0.9 });
+    const hi = buildAnalysis({ text: "Low", scores: { LOW_SAD: 1 }, source: "manual", intensity: 4 });
+    const lo = buildAnalysis({ text: "Low", scores: { LOW_SAD: 1 }, source: "manual", intensity: -1 });
     expect(hi.intensity).toBe(1);
     expect(lo.intensity).toBe(0);
   });
@@ -54,9 +51,9 @@ describe("buildAnalysis", () => {
   });
 
   it("marks weak signals as uncertain rather than presenting them as fact", () => {
-    const a = buildAnalysis({ text: "what's the capital of france", scores: { CALM_PEACEFUL: 0.08 }, source: "claude", clarity: 0.1, offTopic: true });
+    const a = buildAnalysis({ text: "what's the capital of france", scores: { CALM_PEACEFUL: 0.08 }, source: "on-device" });
     expect(a.uncertain).toBe(true);
-    expect(a.flags).toEqual(expect.arrayContaining(["no_signal", "off_topic"]));
+    expect(a.flags).toContain("no_signal");
   });
 
   it("flags very short input and treats low confidence on it as uncertain", () => {
@@ -70,9 +67,7 @@ describe("buildAnalysis", () => {
     const a = buildAnalysis({
       text: "everything at once honestly",
       scores: { LOW_SAD: 0.9, ANXIOUS_WORRIED: 0.8, ANGRY_FRUSTRATED: 0.75, STRESSED_OVERWHELMED: 0.7 },
-      source: "claude",
-      clarity: 0.8,
-      intensity: 0.8,
+      source: "on-device",
     });
     expect(a.secondaryEmotions).toHaveLength(2);
   });

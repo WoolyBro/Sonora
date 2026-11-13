@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Cpu, Lock, X } from "lucide-react";
+import { ArrowRight, Cpu, X } from "lucide-react";
 import { useRef } from "react";
 
 import { btn, cn } from "@/components/ui/styles";
@@ -13,25 +13,18 @@ export const EXAMPLE_PROMPTS = [
   "I just want something peaceful while I work.",
 ];
 
-export type AnalyzerStatus = "checking" | "server" | "device" | "none";
+export type AnalyzerStatus = "checking" | "device" | "none";
 
 export function AnalyzerNote({ status }: { status: AnalyzerStatus }) {
-  if (status === "checking") return <span className="text-faint">Checking how Sonora will read this…</span>;
-  if (status === "server") {
-    return (
-      <span className="inline-flex items-center gap-1.5">
-        <Lock size={13} /> Read by a language model on Sonora&rsquo;s server. Your words are never stored.
-      </span>
-    );
-  }
+  if (status === "checking") return <span className="text-faint">Getting Sonora&rsquo;s emotion model ready…</span>;
   if (status === "device") {
     return (
       <span className="inline-flex items-center gap-1.5">
-        <Cpu size={13} /> Read on this device. Your words never leave your browser.
+        <Cpu size={13} /> Read by Sonora&rsquo;s own model, right here on your device. Your words never leave your browser.
       </span>
     );
   }
-  return <span>Automatic reading isn&rsquo;t set up on this deployment. Pick a mood below instead.</span>;
+  return <span>Sonora&rsquo;s emotion model couldn&rsquo;t be loaded. Pick a mood below instead.</span>;
 }
 
 export function Composer({

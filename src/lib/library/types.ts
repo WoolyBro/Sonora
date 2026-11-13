@@ -1,6 +1,5 @@
 import type { AnalysisSource } from "@/lib/emotion/types";
 import type { Emotion } from "@/lib/emotion/taxonomy";
-import type { AnalyzeMode } from "@/lib/emotion/client";
 
 export interface PlaylistItem {
   id: string;
@@ -30,7 +29,6 @@ export interface LibraryPrefs {
   displayName: string;
   vocals: "any" | "instrumental" | "vocal";
   genres: string[];
-  analysis: AnalyzeMode;
   /** Keep a mood journal at all. Off by default. */
   journal: boolean;
 }
@@ -56,7 +54,6 @@ export const DEFAULT_PREFS: LibraryPrefs = {
   displayName: "",
   vocals: "any",
   genres: [],
-  analysis: "auto",
   journal: false,
 };
 

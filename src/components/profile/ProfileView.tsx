@@ -366,18 +366,6 @@ export function ProfileView() {
                 ))}
               </div>
             </fieldset>
-            <fieldset>
-              <legend className="mb-3 text-sm text-muted">How check-ins are read</legend>
-              <div className="flex flex-wrap gap-2">
-                <button type="button" aria-pressed={lib.prefs.analysis === "auto"} onClick={() => library.updatePrefs({ analysis: "auto" })} className={cn(btn.chip, chipState(lib.prefs.analysis === "auto"))}>
-                  Best available
-                </button>
-                <button type="button" aria-pressed={lib.prefs.analysis === "device-only"} onClick={() => library.updatePrefs({ analysis: "device-only" })} className={cn(btn.chip, chipState(lib.prefs.analysis === "device-only"))}>
-                  On this device only
-                </button>
-              </div>
-              <p className="mt-2 text-xs text-faint">On-device keeps your words in the browser. It needs a one-time ~83 MB download and is less accurate.</p>
-            </fieldset>
             <fieldset className="md:col-span-2">
               <legend className="mb-3 text-sm text-muted">Genres you like (gently favoured in recommendations)</legend>
               <div className="flex flex-wrap gap-2">
