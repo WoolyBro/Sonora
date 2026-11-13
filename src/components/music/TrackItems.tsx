@@ -46,8 +46,13 @@ export function TrackCard({ track, reason, onPlay }: { track: Track; reason?: st
   const { player, isCurrent, isPlaying } = useTrackState(track);
   return (
     <article className="group relative flex w-[11.5rem] shrink-0 snap-start flex-col sm:w-[12.5rem]">
-      <div className="relative">
-        <Cover seed={track.id} mood={track.primaryMood} artwork={track.artwork} />
+      <div
+        className={cn(
+          "relative overflow-hidden rounded-2xl transition duration-500 ease-[var(--ease-soft)] md:group-hover:-translate-y-1.5 md:group-hover:shadow-2xl md:group-hover:shadow-black/50",
+          isCurrent && "halo",
+        )}
+      >
+        <Cover seed={track.id} mood={track.primaryMood} artwork={track.artwork} className="transition-transform duration-700 ease-[var(--ease-soft)] md:group-hover:scale-[1.06]" />
         <button
           type="button"
           onClick={() => (isCurrent ? player.toggle() : onPlay())}

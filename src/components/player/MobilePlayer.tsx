@@ -13,6 +13,7 @@ import { EMOTION_INFO } from "@/lib/emotion/taxonomy";
 import { PlayButton, TimeLabel, TransportControls } from "./Controls";
 import { NowPlayingMeta } from "./PlayerBar";
 import { usePlayer, usePlayerTime } from "./PlayerProvider";
+import { SpectrumAura, SpectrumStrip } from "./Visualizer";
 import { QueueList } from "./QueuePanel";
 import { WaveSeek } from "./WaveSeek";
 
@@ -98,11 +99,16 @@ function FullPlayer() {
         {tab === "now" ? (
           <div className="flex flex-1 flex-col justify-center gap-7 py-4">
             <motion.div
-              className="mx-auto w-full max-w-[22rem] shadow-2xl shadow-black/60"
-              animate={reduced ? undefined : playing ? { scale: [1, 1.025, 1] } : { scale: 0.94 }}
-              transition={playing && !reduced ? { duration: 6, repeat: Infinity, ease: "easeInOut" } : { duration: 0.5 }}
+              className="mx-auto w-full max-w-[22rem]"
+              animate={reduced ? undefined : { scale: playing ? 1 : 0.94 }}
+              transition={{ type: "spring", stiffness: 200, damping: 24 }}
             >
-              <Cover seed={track.id} mood={track.primaryMood} artwork={track.artwork} rounded="rounded-[28px]" label={`${track.title} cover`} />
+              {/* Light ripples around the cover with the track's real spectrum. */}
+              <SpectrumAura>
+                <div className="rounded-[28px] shadow-2xl shadow-black/60">
+                  <Cover seed={track.id} mood={track.primaryMood} artwork={track.artwork} rounded="rounded-[28px]" label={`${track.title} cover`} />
+                </div>
+              </SpectrumAura>
             </motion.div>
 
             <div className="flex items-end gap-3">
@@ -147,6 +153,9 @@ export function MobilePlayer() {
         className="glass fixed inset-x-2 z-50 flex h-[56px] items-center gap-3 rounded-2xl px-2 ring-1 ring-white/10 md:hidden"
         style={{ bottom: "calc(var(--nav-h) + 8px)" }}
       >
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-2xl">
+          <SpectrumStrip className="absolute inset-x-0 bottom-0 h-full w-full opacity-25" />
+        </div>
         <button type="button" onClick={() => p.setExpanded(true)} className="flex min-w-0 flex-1 items-center gap-3 text-left" aria-label={`Open player: ${track.title}`}>
           <div className="h-10 w-10 shrink-0"><Cover seed={track.id} mood={track.primaryMood} artwork={track.artwork} rounded="rounded-lg" /></div>
           <NowPlayingMeta compact />

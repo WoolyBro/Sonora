@@ -2,8 +2,9 @@
 
 import { Pause, Play, Sparkles } from "lucide-react";
 
+import { Stagger, StaggerItem } from "@/components/motion/Reveal";
 import { usePlayer } from "@/components/player/PlayerProvider";
-import { btn } from "@/components/ui/styles";
+import { btn, cn } from "@/components/ui/styles";
 import { catalog } from "@/lib/catalog";
 import { formatTime } from "@/lib/audio/format";
 import { EMOTION_INFO } from "@/lib/emotion/taxonomy";
@@ -51,12 +52,12 @@ export function OriginalsView() {
       {originals.length === 0 ? (
         <p className="mt-12 text-muted">No originals in the catalogue yet.</p>
       ) : (
-        <ul className="mt-12 grid gap-5 md:grid-cols-2">
+        <Stagger as="ul" stagger={0.08} className="mt-12 grid gap-5 md:grid-cols-2">
           {originals.map((t, i) => {
             const isCurrent = player.track?.id === t.id;
             const playing = isCurrent && player.status === "playing";
             return (
-              <li key={t.id} className="group grid grid-cols-[7rem_1fr] gap-5 rounded-[1.75rem] bg-surface p-4 ring-1 ring-hairline sm:grid-cols-[9rem_1fr]">
+              <StaggerItem as="li" key={t.id} className={cn("group grid grid-cols-[7rem_1fr] gap-5 rounded-[1.75rem] bg-surface p-4 ring-1 ring-hairline transition duration-500 hover:bg-surface-strong sm:grid-cols-[9rem_1fr]", isCurrent && "halo")}>
                 <button
                   type="button"
                   onClick={() => (isCurrent ? player.toggle() : player.playTracks(originals, i, "Sonora Originals"))}
@@ -99,10 +100,10 @@ export function OriginalsView() {
                   </div>
                   <p className="mt-3 text-xs text-faint">{t.credits}</p>
                 </div>
-              </li>
+              </StaggerItem>
             );
           })}
-        </ul>
+        </Stagger>
       )}
     </div>
   );

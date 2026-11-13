@@ -234,6 +234,67 @@ body {
   animation: shimmer 1.6s linear infinite;
 }
 
+/* ── Motion graphics ─────────────────────────────────────────────── */
+
+/* Mood orbit (landing hero) */
+@keyframes spin { to { transform: rotate(360deg); } }
+.orbit-spin { animation: spin 60s linear infinite; will-change: transform; }
+.orbit-path { transform-box: fill-box; transform-origin: center; animation: spin 140s linear infinite; }
+@keyframes orbit-pulse {
+  0% { transform: scale(1); opacity: 0.9; }
+  100% { transform: scale(3.2); opacity: 0; }
+}
+.orbit-pulse { animation: orbit-pulse 6s cubic-bezier(0.22, 1, 0.36, 1) infinite; }
+@keyframes orbit-bob {
+  0%, 100% { transform: translateY(-8%); }
+  50% { transform: translateY(8%); }
+}
+.orbit-bob { animation: orbit-bob 5s ease-in-out infinite; }
+
+/* A slow band of light travelling across text (hero "soundtrack.") */
+@keyframes sheen { from { background-position: 120% 0; } to { background-position: -120% 0; } }
+.text-sheen {
+  background-image: linear-gradient(105deg, var(--atmo-accent) 0%, var(--atmo-accent) 38%, #fff 50%, var(--atmo-accent) 62%, var(--atmo-accent) 100%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: sheen 7s ease-in-out infinite;
+}
+
+/* Rotating light around a focused field (composer) */
+@property --ring-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+@keyframes ring-rotate { to { --ring-angle: 360deg; } }
+.glow-ring { position: relative; isolation: isolate; }
+.glow-ring::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(from var(--ring-angle), transparent 0%, var(--atmo-accent) 18%, transparent 36%, var(--warm) 60%, transparent 78%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  animation: ring-rotate 5s linear infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+.glow-ring:focus-within::before, .glow-ring[data-active="true"]::before { opacity: 1; }
+
+/* Playing track card: a soft halo that breathes with the music */
+@keyframes halo {
+  0%, 100% { box-shadow: 0 0 0 1px rgb(255 255 255 / 0.12), 0 12px 40px -12px var(--atmo-accent); }
+  50% { box-shadow: 0 0 0 1px rgb(255 255 255 / 0.22), 0 18px 60px -10px var(--atmo-accent); }
+}
+.halo { animation: halo 2.4s ease-in-out infinite; }
+
+/* Expanding ripple when a mood is chosen */
+@keyframes ripple { from { transform: scale(0.6); opacity: 0.7; } to { transform: scale(2.4); opacity: 0; } }
+.ripple { animation: ripple 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
 .no-scrollbar { scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 
@@ -245,3 +306,11 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* Reading reveal: the intensity liquid fills up, score bars grow in */
+@keyframes wave-rise { from { transform: translateY(100px); } to { transform: translateY(0); } }
+.wave-rise { animation: wave-rise 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both; }
+@keyframes bar-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.bar-grow { transform-origin: left; animation: bar-grow 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes breathe-soft { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+.breathe-soft { animation: breathe-soft 4s ease-in-out infinite; }

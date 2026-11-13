@@ -4,6 +4,8 @@ import { Search, X } from "lucide-react";
 import { useDeferredValue, useMemo, useState } from "react";
 
 import { MoodOrb } from "@/components/emotion/MoodPicker";
+import { Stagger, StaggerItem } from "@/components/motion/Reveal";
+import { TiltCard } from "@/components/motion/TiltCard";
 import { CollectionCard } from "@/components/music/CollectionCard";
 import { TrackRow } from "@/components/music/TrackItems";
 import { usePlayer } from "@/components/player/PlayerProvider";
@@ -51,11 +53,15 @@ export function DiscoverView() {
       <h1 className="font-display mt-4 text-[clamp(2.4rem,6vw,4.5rem)] leading-[1.02]">Find a sound for any state.</h1>
 
       <section aria-label="Collections" className="mt-12">
-        <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
+        <Stagger stagger={0.07} className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
           {catalog.collections.map((c) => (
-            <CollectionCard key={c.id} collection={c} />
+            <StaggerItem key={c.id}>
+              <TiltCard>
+                <CollectionCard collection={c} />
+              </TiltCard>
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
       </section>
 
       <section aria-labelledby="search-heading" className="mt-20">

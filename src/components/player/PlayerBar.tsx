@@ -11,6 +11,7 @@ import { TimeLabel, TransportControls, VolumeControl } from "./Controls";
 import { MobilePlayer } from "./MobilePlayer";
 import { usePlayer } from "./PlayerProvider";
 import { QueuePanel } from "./QueuePanel";
+import { SpectrumStrip } from "./Visualizer";
 import { WaveSeek } from "./WaveSeek";
 
 export function NowPlayingMeta({ compact = false, large = false }: { compact?: boolean; large?: boolean }) {
@@ -57,6 +58,8 @@ export function PlayerBar() {
         transition={{ type: "spring", stiffness: 300, damping: 34 }}
         className="glass fixed inset-x-0 bottom-0 z-50 hidden h-[var(--player-height)] border-t border-hairline md:block"
       >
+        {/* The music, glowing along the top edge of the bar. */}
+        <SpectrumStrip className="absolute inset-x-0 bottom-full h-6 w-full opacity-60" />
         <div className="mx-auto grid h-full max-w-[1400px] grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)_minmax(0,1fr)] items-center gap-6 px-5">
           <div className="flex min-w-0 items-center gap-3">
             <button type="button" onClick={() => p.setExpanded(true)} className="h-14 w-14 shrink-0" aria-label="Open full player">
