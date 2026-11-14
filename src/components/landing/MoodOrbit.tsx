@@ -53,7 +53,7 @@ export function MoodOrbit({ className = "" }: { className?: string }) {
               cy="100"
               r={r.radius * 1.4}
               fill="none"
-              stroke="rgb(255 255 255 / 0.07)"
+              stroke="rgb(42 32 78 / 0.14)"
               strokeWidth="0.35"
               strokeDasharray={i === 1 ? "1.2 2.4" : undefined}
               className="orbit-path"

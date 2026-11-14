@@ -41,13 +41,13 @@ export function WaveSeek({ peaks, compact = false, className = "" }: { peaks: nu
                 width={1.8}
                 height={h}
                 rx={0.9}
-                fill={played ? "var(--atmo-accent)" : "rgb(255 255 255 / 0.18)"}
+                fill={played ? "var(--atmo-ink)" : "rgb(42 32 78 / 0.16)"}
               />
             );
           })}
         </svg>
       ) : (
-        <div className="absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 overflow-hidden rounded-full bg-white/12" aria-hidden="true">
+        <div className="absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 overflow-hidden rounded-full bg-ink/12" aria-hidden="true">
           <div className="h-full rounded-full bg-[var(--atmo-accent)]" style={{ width: `${progress * 100}%` }} />
         </div>
       )}

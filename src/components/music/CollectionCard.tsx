@@ -28,7 +28,7 @@ export function CollectionCard({ collection, size = "md" }: { collection: Collec
         type="button"
         onClick={() => player.playTracks(tracks, 0, collection.title)}
         aria-label={`Play ${collection.title}`}
-        className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-ink text-bg shadow-xl shadow-black/40 transition md:opacity-0 md:group-focus-within:opacity-100 md:group-hover:opacity-100"
+        className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-ink text-bg shadow-xl shadow-[rgb(42_32_78/0.16)] transition md:opacity-0 md:group-focus-within:opacity-100 md:group-hover:opacity-100"
       >
         <Play size={18} fill="currentColor" className="ml-0.5" />
       </button>

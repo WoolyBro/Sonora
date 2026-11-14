@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from "react";
 
+import { createColorReader } from "@/lib/cssColor";
+
 /**
  * Layered, slowly breathing sound waves drawn on a canvas. Pauses when off
  * screen or when the tab is hidden, and renders a single still frame for
@@ -20,11 +22,12 @@ export function WaveField({ className = "" }: { className?: string }) {
     let visible = true;
     let w = 0;
     let h = 0;
-    let colours = { a: "#a89bff", b: "#f2a97f" };
+    const reader = createColorReader();
+    let colours = { a: "rgba(90,70,190,1)", b: "rgba(238,138,92,1)" };
 
+    // On light paper the strokes use the mood's deeper ink, with warm peach accents.
     const readColours = () => {
-      const s = getComputedStyle(document.documentElement);
-      colours = { a: s.getPropertyValue("--atmo-accent").trim() || "#a89bff", b: "#f2a97f" };
+      colours = { a: reader.css("--atmo-ink", 1), b: reader.css("--warm", 1, [238, 138, 92]) };
     };
 
     const resize = () => {
@@ -65,7 +68,7 @@ export function WaveField({ className = "" }: { className?: string }) {
         grad.addColorStop(0.7, i % 3 === 0 ? colours.b : colours.a);
         grad.addColorStop(1, "rgba(255,255,255,0)");
         ctx.strokeStyle = grad;
-        ctx.globalAlpha = 0.12 + 0.4 * Math.sin(p * Math.PI) ** 2;
+        ctx.globalAlpha = 0.1 + 0.42 * Math.sin(p * Math.PI) ** 2;
         ctx.lineWidth = i === Math.floor(LAYERS / 2) ? 1.6 : 1;
         ctx.beginPath();
         for (let x = 0; x <= w; x += 6) {
@@ -117,6 +120,7 @@ export function WaveField({ className = "" }: { className?: string }) {
       ro.disconnect();
       io.disconnect();
       window.removeEventListener("pointermove", onPointer);
+      reader.dispose();
     };
   }, []);
 

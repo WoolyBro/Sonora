@@ -5,6 +5,8 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { usePlayer } from "@/components/player/PlayerProvider";
 import { DEFAULT_ATMOSPHERE, EMOTION_INFO, type Emotion } from "@/lib/emotion/taxonomy";
 
+import { DotField } from "./DotField";
+
 const AtmosphereContext = createContext<(mood: Emotion | null) => void>(() => {});
 
 /** Pages call this to tint the room (e.g. the emotion result). */
@@ -30,12 +32,15 @@ export function AtmosphereProvider({ children }: { children: ReactNode }) {
 
   return (
     <AtmosphereContext.Provider value={setExplicit}>
-      <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-70">
+      {/* Grainy pastel gradient (grain is the body's .grain layer) that follows the mood… */}
+      <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         <div className="atmo-blob atmo-blob--1" />
         <div className="atmo-blob atmo-blob--2" />
         <div className="atmo-blob atmo-blob--3" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,transparent_0%,var(--bg)_75%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,transparent_0%,color-mix(in_oklab,var(--bg)_55%,transparent)_80%)]" />
       </div>
+      {/* …with the dotted landscape and the pointer's light on top. */}
+      <DotField />
       {children}
     </AtmosphereContext.Provider>
   );

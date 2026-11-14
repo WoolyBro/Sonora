@@ -28,10 +28,10 @@ export function QueueList({ onPick }: { onPick?: () => void }) {
     <div className="space-y-6">
       <section>
         <h3 className="px-1 text-xs font-medium uppercase tracking-[0.16em] text-faint">Now playing{p.sourceLabel ? ` · ${p.sourceLabel}` : ""}</h3>
-        <div className="mt-2 flex items-center gap-3 rounded-xl bg-white/[0.05] p-2">
+        <div className="mt-2 flex items-center gap-3 rounded-xl bg-ink/[0.05] p-2">
           <div className="h-11 w-11 shrink-0"><Cover seed={p.track.id} mood={p.track.primaryMood} artwork={p.track.artwork} rounded="rounded-lg" /></div>
           <div className="min-w-0 flex-1">
-            <p className="flex items-center gap-2 truncate font-medium text-[var(--atmo-accent)]">
+            <p className="flex items-center gap-2 truncate font-medium text-[var(--atmo-ink)]">
               <Equaliser paused={p.status !== "playing"} /> <span className="truncate">{p.track.title}</span>
             </p>
             <p className="truncate text-sm text-muted">{p.track.artist}</p>
@@ -53,7 +53,7 @@ export function QueueList({ onPick }: { onPick?: () => void }) {
         ) : (
           <ol className="mt-1 space-y-0.5">
             {upcoming.map(({ track, index }, i) => (
-              <li key={track.id} className="group flex items-center gap-3 rounded-xl px-1 py-1.5 hover:bg-white/[0.04]">
+              <li key={track.id} className="group flex items-center gap-3 rounded-xl px-1 py-1.5 hover:bg-ink/[0.04]">
                 <button
                   type="button"
                   onClick={() => {

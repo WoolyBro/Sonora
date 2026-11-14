@@ -4,6 +4,7 @@ import { Pause, Play, Sparkles } from "lucide-react";
 
 import { Stagger, StaggerItem } from "@/components/motion/Reveal";
 import { usePlayer } from "@/components/player/PlayerProvider";
+import { Doodle } from "@/components/ui/Doodle";
 import { btn, cn } from "@/components/ui/styles";
 import { catalog } from "@/lib/catalog";
 import { formatTime } from "@/lib/audio/format";
@@ -24,7 +25,10 @@ export function OriginalsView() {
       <div className="grid gap-8 md:grid-cols-[1.2fr_1fr] md:items-end">
         <div>
           <p className="text-xs font-medium uppercase tracking-[0.28em] text-muted">Sonora Originals</p>
-          <h1 className="font-display mt-4 text-[clamp(2.4rem,6vw,4.5rem)] leading-[1.02]">Made here, for the moods in between.</h1>
+          <h1 className="font-display relative mt-4 text-[clamp(2.4rem,6vw,4.5rem)] leading-[1.02]">
+            Made here, for the moods in between.
+            <Doodle name="notes" delay={0.5} float tilt={-10} className="absolute -top-8 right-4 hidden h-10 w-10 text-[var(--atmo-ink)] sm:block" />
+          </h1>
           <p className="mt-5 max-w-xl text-lg text-muted">
             Original music created or commissioned for Sonora, including AI-assisted compositions and vocals, always credited as such.
           </p>
@@ -39,8 +43,8 @@ export function OriginalsView() {
       </div>
 
       {allSamples && (
-        <p className="mt-10 flex gap-3 rounded-2xl bg-white/[0.04] p-4 text-sm text-muted ring-1 ring-hairline">
-          <Sparkles size={18} className="mt-0.5 shrink-0 text-[var(--atmo-accent)]" />
+        <p className="mt-10 flex gap-3 rounded-2xl bg-ink/[0.04] p-4 text-sm text-muted ring-1 ring-hairline">
+          <Sparkles size={18} className="mt-0.5 shrink-0 text-[var(--atmo-ink)]" />
           <span>
             These are generated sample sketches, there so every feature works end to end. They&rsquo;re not finished songs and Sonora
             doesn&rsquo;t generate music on request. Add your own originals in <code className="text-ink">src/data/catalog.json</code> with{" "}
@@ -73,7 +77,7 @@ export function OriginalsView() {
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <h2 className="flex items-center gap-2 truncate text-lg font-semibold">
-                        {isCurrent && <Equaliser paused={!playing} className="text-[var(--atmo-accent)]" />}
+                        {isCurrent && <Equaliser paused={!playing} className="text-[var(--atmo-ink)]" />}
                         <span className="truncate">{t.title}</span>
                       </h2>
                       <p className="truncate text-sm text-muted">
@@ -87,15 +91,15 @@ export function OriginalsView() {
                   </div>
                   <p className="mt-3 text-sm leading-relaxed text-ink/80">{t.description}</p>
                   <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
-                    <span className="rounded-full bg-white/[0.06] px-2.5 py-1" style={{ color: EMOTION_INFO[t.primaryMood].accent }}>
+                    <span className="rounded-full px-2.5 py-1" style={{ color: EMOTION_INFO[t.primaryMood].palette[0], background: `${EMOTION_INFO[t.primaryMood].accent}38` }}>
                       {EMOTION_INFO[t.primaryMood].label}
                     </span>
                     {t.secondaryMoods.map((m) => (
-                      <span key={m} className="rounded-full bg-white/[0.04] px-2.5 py-1 text-muted">
+                      <span key={m} className="rounded-full bg-ink/[0.04] px-2.5 py-1 text-muted">
                         {EMOTION_INFO[m].short}
                       </span>
                     ))}
-                    {t.aiAssisted && <span className="rounded-full bg-white/[0.04] px-2.5 py-1 text-muted">AI-assisted</span>}
+                    {t.aiAssisted && <span className="rounded-full bg-ink/[0.04] px-2.5 py-1 text-muted">AI-assisted</span>}
                     {t.isSample && <SampleBadge />}
                   </div>
                   <p className="mt-3 text-xs text-faint">{t.credits}</p>

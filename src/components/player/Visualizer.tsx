@@ -31,7 +31,7 @@ function useSpectrum(draw: (f: Frame) => void, enabled: boolean) {
       playing: player.status === "playing",
       getPlayhead: player.getPlayhead,
       accent: info?.accent ?? "#a89bff",
-      deep: info?.palette[0] ?? "#3b2f7a",
+      deep: info?.palette[1] ?? "#4a3f7a",
     };
   });
 
@@ -122,9 +122,10 @@ export function SpectrumAura({ children }: { children: ReactNode }) {
     const base = Math.min(w, h) * 0.34; // just outside the cover's edge
     ctx.clearRect(0, 0, w, h);
 
-    const glow = ctx.createRadialGradient(c.x, c.y, base * 0.6, c.x, c.y, base * (1.5 + level * 0.5));
+    // Fade out fully inside the canvas so the glow never shows a square edge.
+    const glow = ctx.createRadialGradient(c.x, c.y, base * 0.6, c.x, c.y, Math.min(w, h) / 2);
     glow.addColorStop(0, `${accent}${Math.round(40 + level * 80).toString(16).padStart(2, "0")}`);
-    glow.addColorStop(0.6, `${deep}33`);
+    glow.addColorStop(0.6, `${accent}22`);
     glow.addColorStop(1, "transparent");
     ctx.fillStyle = glow;
     ctx.fillRect(0, 0, w, h);
@@ -136,9 +137,9 @@ export function SpectrumAura({ children }: { children: ReactNode }) {
       const p = Math.abs(((k / N) * 2) % 2 - 1); // mirrored: lows at the bottom, highs at the top
       const v = bandAt(bands, 1 - p);
       const a = (k / N) * Math.PI * 2 + Math.PI / 2 + time * 0.05;
-      const len = base * (0.04 + 0.42 * v);
-      ctx.strokeStyle = accent;
-      ctx.globalAlpha = 0.18 + 0.7 * v;
+      const len = base * (0.04 + 0.3 * v);
+      ctx.strokeStyle = deep;
+      ctx.globalAlpha = 0.22 + 0.7 * v;
       ctx.beginPath();
       ctx.moveTo(c.x + Math.cos(a) * base, c.y + Math.sin(a) * base);
       ctx.lineTo(c.x + Math.cos(a) * (base + len), c.y + Math.sin(a) * (base + len));
@@ -163,7 +164,7 @@ export function SpectrumStrip({ className = "" }: { className?: string }) {
   const reduced = useReducedMotion();
   const { ref, size } = useCanvas();
 
-  useSpectrum(({ bands, accent }) => {
+  useSpectrum(({ bands, deep }) => {
     const ctx = ref.current?.getContext("2d");
     if (!ctx) return;
     const { w, h } = size.current;
@@ -171,8 +172,8 @@ export function SpectrumStrip({ className = "" }: { className?: string }) {
     const N = Math.max(24, Math.floor(w / 9));
     const bw = w / N;
     const grad = ctx.createLinearGradient(0, h, 0, 0);
-    grad.addColorStop(0, `${accent}cc`);
-    grad.addColorStop(1, `${accent}00`);
+    grad.addColorStop(0, `${deep}aa`);
+    grad.addColorStop(1, `${deep}00`);
     ctx.fillStyle = grad;
     for (let k = 0; k < N; k++) {
       const p = Math.abs((k / (N - 1)) * 2 - 1); // mirrored from the centre: lows in the middle

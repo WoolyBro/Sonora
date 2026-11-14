@@ -28,7 +28,7 @@ function Section({ id, title, action, children }: { id: string; title: string; a
 }
 
 function Empty({ children }: { children: ReactNode }) {
-  return <p className="rounded-2xl bg-white/[0.03] p-5 text-sm text-muted ring-1 ring-hairline">{children}</p>;
+  return <p className="rounded-2xl bg-ink/[0.03] p-5 text-sm text-muted ring-1 ring-hairline">{children}</p>;
 }
 
 function Account() {
@@ -68,7 +68,7 @@ function Account() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="min-w-0 flex-1 rounded-full bg-white/[0.05] px-5 py-3 text-sm ring-1 ring-hairline placeholder:text-faint focus:outline-none focus-visible:ring-[var(--atmo-accent)]"
+              className="min-w-0 flex-1 rounded-full bg-ink/[0.05] px-5 py-3 text-sm ring-1 ring-hairline placeholder:text-faint focus:outline-none focus-visible:ring-[var(--atmo-accent)]"
             />
             <button type="submit" disabled={busy} className={btn.primary}>
               <Mail size={15} /> Email me a link
@@ -147,7 +147,7 @@ function Playlists() {
             onChange={(e) => setNewName(e.target.value)}
             placeholder="New playlist"
             maxLength={80}
-            className="w-40 rounded-full bg-white/[0.05] px-4 py-2 text-sm ring-1 ring-hairline placeholder:text-faint focus:outline-none focus-visible:ring-[var(--atmo-accent)] sm:w-52"
+            className="w-40 rounded-full bg-ink/[0.05] px-4 py-2 text-sm ring-1 ring-hairline placeholder:text-faint focus:outline-none focus-visible:ring-[var(--atmo-accent)] sm:w-52"
           />
           <button type="submit" className={btn.secondary} aria-label="Create playlist"><Plus size={15} /></button>
         </form>
@@ -161,7 +161,7 @@ function Playlists() {
             const tracks = getTracks(p.trackIds);
             const expanded = open === p.id;
             return (
-              <li key={p.id} className="rounded-2xl bg-white/[0.03] ring-1 ring-hairline">
+              <li key={p.id} className="rounded-2xl bg-ink/[0.03] ring-1 ring-hairline">
                 <div className="flex items-center gap-2 p-2 pl-4">
                   {renaming?.id === p.id ? (
                     <form
@@ -178,7 +178,7 @@ function Playlists() {
                         value={renaming.title}
                         maxLength={80}
                         onChange={(e) => setRenaming({ id: p.id, title: e.target.value })}
-                        className="min-w-0 flex-1 rounded-lg bg-white/8 px-3 py-1.5 text-sm focus:outline-none"
+                        className="min-w-0 flex-1 rounded-lg bg-ink/8 px-3 py-1.5 text-sm focus:outline-none"
                       />
                       <button type="submit" className={btn.secondary}>Save</button>
                     </form>

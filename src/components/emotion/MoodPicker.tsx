@@ -43,7 +43,7 @@ export function MoodPicker({
               onClick={() => onChange(mood)}
               className={cn(
                 "group flex items-center gap-3 rounded-2xl p-3 text-left ring-1 transition duration-300 active:scale-[0.98]",
-                active ? "bg-white/10 ring-white/30" : "bg-white/[0.03] ring-hairline hover:bg-white/[0.06]",
+                active ? "bg-ink/10 ring-ink/30" : "bg-ink/[0.03] ring-hairline hover:bg-ink/[0.06]",
               )}
             >
               <span className="relative inline-flex">
@@ -61,7 +61,7 @@ export function MoodPicker({
                 <span className="block text-sm font-medium">{info.label}</span>
                 {!compact && <span className="block truncate text-xs text-faint">{info.examples.slice(0, 3).join(", ")}</span>}
               </span>
-              {active && <Check size={16} className="text-[var(--atmo-accent)]" />}
+              {active && <Check size={16} className="text-[var(--atmo-ink)]" />}
             </button>
           );
         })}

@@ -9,6 +9,7 @@ import {
   Stagger,
   StaggerItem,
 } from "@/components/motion/Reveal";
+import { Doodle, HandNote } from "@/components/ui/Doodle";
 import { btn, cn } from "@/components/ui/styles";
 import { MAX_INPUT_CHARS } from "@/lib/emotion/normalize";
 
@@ -71,8 +72,9 @@ export function Composer({
       <p className="text-xs font-medium uppercase tracking-[0.28em] text-muted">
         Check in
       </p>
-      <h1 className="font-display mt-4 text-[clamp(2.4rem,6vw,4.5rem)] leading-[1.02]">
+      <h1 className="font-display relative mt-4 text-[clamp(2.4rem,6vw,4.5rem)] leading-[1.02]">
         <SplitWords text="How are you feeling today?" stagger={0.07} />
+        <Doodle name="sparkle" delay={0.9} float tilt={10} className="absolute -right-2 -top-4 hidden h-10 w-10 text-[var(--warm)] md:block lg:-right-12" />
       </h1>
       <Reveal delay={0.35} y={10}>
         <p className="mt-4 max-w-xl text-lg text-muted">
@@ -83,14 +85,19 @@ export function Composer({
 
       <Reveal delay={0.5} y={18}>
         <form
-          className="mt-10"
+          className="relative mt-10"
           onSubmit={(e) => {
             e.preventDefault();
             if (canSubmit) onSubmit();
           }}
         >
+          {/* margin note pointing at the box */}
+          <span className="pointer-events-none absolute -top-12 right-2 hidden items-end gap-1 sm:flex">
+            <HandNote tilt={-3} className="text-[1.35rem]">stays on your device</HandNote>
+            <Doodle name="arrow" delay={1.1} className="mb-[-14px] h-10 w-12 rotate-[25deg] text-[var(--atmo-ink)]" />
+          </span>
           <div
-            className="glow-ring glass rounded-[1.75rem] p-2 ring-1 ring-white/10 transition focus-within:ring-[color-mix(in_oklab,var(--atmo-accent)_35%,transparent)]"
+            className="glow-ring glass rounded-[1.75rem] p-2 ring-1 ring-ink/10 transition focus-within:ring-[color-mix(in_oklab,var(--atmo-accent)_35%,transparent)]"
             data-active={value.trim().length > 0}
           >
             <label htmlFor="feeling" className="sr-only">
@@ -179,7 +186,7 @@ export function Composer({
                   onChange(p);
                   ref.current?.focus();
                 }}
-                className="rounded-full bg-white/[0.04] px-4 py-2 text-left text-sm text-muted ring-1 ring-hairline transition hover:bg-white/[0.08] hover:text-ink"
+                className="rounded-full bg-ink/[0.04] px-4 py-2 text-left text-sm text-muted ring-1 ring-hairline transition hover:bg-ink/[0.08] hover:text-ink"
               >
                 {p}
               </button>
@@ -189,7 +196,7 @@ export function Composer({
         <button
           type="button"
           onClick={onPickManually}
-          className="mt-8 text-sm text-muted underline decoration-white/25 underline-offset-4 hover:text-ink"
+          className="mt-8 text-sm text-muted underline decoration-ink/25 underline-offset-4 hover:text-ink"
         >
           Rather not write? Pick a mood yourself
         </button>

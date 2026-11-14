@@ -17,7 +17,7 @@ export function Footer() {
           <p className="mt-4 text-xs leading-relaxed text-faint">
             Sonora is a music experience, not a medical or mental-health service. If you&rsquo;re struggling, please reach out to
             someone you trust or find a local helpline at{" "}
-            <a className="underline decoration-white/30 underline-offset-2 hover:text-ink" href="https://findahelpline.com" target="_blank" rel="noreferrer">
+            <a className="underline decoration-ink/30 underline-offset-2 hover:text-ink" href="https://findahelpline.com" target="_blank" rel="noreferrer">
               findahelpline.com
             </a>
             .

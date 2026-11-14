@@ -37,17 +37,17 @@ export function TransportControls({ size = "md" }: { size?: "md" | "lg" }) {
   const iconSize = size === "lg" ? 24 : 18;
   const RepeatIcon = p.queue.repeat === "one" ? Repeat1 : Repeat;
   const toggleCls = (on: boolean) =>
-    cn("inline-flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-white/8", on ? "text-[var(--atmo-accent)]" : "text-muted hover:text-ink");
+    cn("inline-flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-ink/8", on ? "text-[var(--atmo-ink)]" : "text-muted hover:text-ink");
   return (
     <div className={cn("flex items-center", size === "lg" ? "justify-between gap-2" : "gap-2")}>
       <button type="button" onClick={p.toggleShuffle} aria-pressed={p.queue.shuffle} aria-label="Shuffle" className={toggleCls(p.queue.shuffle)}>
         <Shuffle size={size === "lg" ? 20 : 16} />
       </button>
-      <button type="button" onClick={p.prev} disabled={!p.track} aria-label="Previous track" className="inline-flex h-10 w-10 items-center justify-center rounded-full text-ink/90 transition hover:bg-white/8 disabled:opacity-30">
+      <button type="button" onClick={p.prev} disabled={!p.track} aria-label="Previous track" className="inline-flex h-10 w-10 items-center justify-center rounded-full text-ink/90 transition hover:bg-ink/8 disabled:opacity-30">
         <SkipBack size={iconSize} fill="currentColor" />
       </button>
       <PlayButton size={size === "lg" ? "lg" : "md"} />
-      <button type="button" onClick={p.next} disabled={!p.track} aria-label="Next track" className="inline-flex h-10 w-10 items-center justify-center rounded-full text-ink/90 transition hover:bg-white/8 disabled:opacity-30">
+      <button type="button" onClick={p.next} disabled={!p.track} aria-label="Next track" className="inline-flex h-10 w-10 items-center justify-center rounded-full text-ink/90 transition hover:bg-ink/8 disabled:opacity-30">
         <SkipForward size={iconSize} fill="currentColor" />
       </button>
       <button
@@ -79,7 +79,7 @@ export function VolumeControl() {
   const Icon = level === 0 ? VolumeX : level < 0.5 ? Volume1 : Volume2;
   return (
     <div className="flex items-center gap-1.5">
-      <button type="button" onClick={toggleMute} aria-label={muted ? "Unmute" : "Mute"} aria-pressed={muted} className="inline-flex h-9 w-9 items-center justify-center rounded-full text-muted transition hover:bg-white/8 hover:text-ink">
+      <button type="button" onClick={toggleMute} aria-label={muted ? "Unmute" : "Mute"} aria-pressed={muted} className="inline-flex h-9 w-9 items-center justify-center rounded-full text-muted transition hover:bg-ink/8 hover:text-ink">
         <Icon size={18} />
       </button>
       <input

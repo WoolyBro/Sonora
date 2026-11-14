@@ -50,7 +50,7 @@ function Rail({ title, subtitle, items, label, action }: { title: string; subtit
         </div>
       </div>
       {items.length === 0 ? (
-        <p className="rounded-2xl bg-white/[0.03] p-6 text-sm text-muted ring-1 ring-hairline">
+        <p className="rounded-2xl bg-ink/[0.03] p-6 text-sm text-muted ring-1 ring-hairline">
           Nothing in the library fits this direction yet. Add more tracks to the catalogue to fill it.
         </p>
       ) : (
@@ -191,7 +191,7 @@ export function Recommendations({ profile, onAdjust, onRestart }: { profile: Emo
             items={groups.shift}
             label="Shift your atmosphere"
             action={
-              <div role="radiogroup" aria-label="Shift direction" className="flex rounded-full bg-white/[0.04] p-1 ring-1 ring-hairline">
+              <div role="radiogroup" aria-label="Shift direction" className="flex rounded-full bg-ink/[0.04] p-1 ring-1 ring-hairline">
                 {(["calmer", "brighter"] as const).map((d) => (
                   <button
                     key={d}
