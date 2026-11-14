@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Info, LifeBuoy, RotateCcw } from "lucide-react";
 
 import { CountUp, EASE_OUT, SplitWords, Stagger, StaggerItem } from "@/components/motion/Reveal";
+import { Doodle } from "@/components/ui/Doodle";
 import { btn, chipState, cn } from "@/components/ui/styles";
 import { EMOTIONS, EMOTION_INFO, type Emotion } from "@/lib/emotion/taxonomy";
 import type { EmotionAnalysis } from "@/lib/emotion/types";
@@ -52,11 +53,14 @@ export function ReadingCard({
 
   return (
     <div className="mx-auto w-full max-w-5xl">
-      <p className="text-xs font-medium uppercase tracking-[0.28em] text-muted">Your current soundscape</p>
+      <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.28em] text-muted">
+        Your current soundscape
+        <Doodle name="sparkle" delay={0.6} className="h-5 w-5 text-[var(--warm)]" />
+      </p>
 
       {analysis.supportSuggested && (
-        <div role="note" className="mt-6 flex gap-3 rounded-2xl bg-[#ffb3c1]/10 p-4 text-sm ring-1 ring-[#ffb3c1]/25">
-          <LifeBuoy size={20} className="mt-0.5 shrink-0 text-[#ffb3c1]" />
+        <div role="note" className="mt-6 flex gap-3 rounded-2xl bg-[#ffb3c1]/25 p-4 text-sm ring-1 ring-[#e0708c]/35">
+          <LifeBuoy size={20} className="mt-0.5 shrink-0 text-[#b83a5c]" />
           <p className="leading-relaxed text-ink/90">
             It sounds like things might be really heavy right now. You deserve support from a person, not just a playlist. If you&rsquo;re
             thinking about harming yourself, please contact a local crisis line. You can find one at{" "}
@@ -73,7 +77,7 @@ export function ReadingCard({
         <StaggerItem>
         <section aria-label="Reading" className="h-full rounded-[2rem] bg-surface p-6 ring-1 ring-hairline sm:p-8">
           {analysis.uncertain && !edited ? (
-            <div className="mb-6 rounded-2xl bg-white/[0.05] p-4 text-sm text-muted ring-1 ring-hairline">
+            <div className="mb-6 rounded-2xl bg-ink/[0.05] p-4 text-sm text-muted ring-1 ring-hairline">
               <strong className="font-semibold text-ink">This one&rsquo;s hard to read.</strong> The words didn&rsquo;t carry a clear feeling,
               so treat this as a guess and pick what fits better on the right.
             </div>
@@ -131,7 +135,7 @@ export function ReadingCard({
 
           <p className="mt-5 text-lg leading-relaxed text-ink/90">{edited ? "Adjusted by you. Sonora will follow your lead." : analysis.explanation}</p>
 
-          <details className="group mt-6 rounded-2xl bg-white/[0.03] p-4 text-sm ring-1 ring-hairline">
+          <details className="group mt-6 rounded-2xl bg-ink/[0.03] p-4 text-sm ring-1 ring-hairline">
             <summary className="flex cursor-pointer list-none items-center gap-2 text-muted marker:hidden">
               <Info size={15} />
               {SOURCE_LABEL[analysis.source]}
@@ -146,7 +150,7 @@ export function ReadingCard({
                   {EMOTIONS.map((e, i) => (
                     <li key={e} className="grid grid-cols-[9.5rem_1fr_2.5rem] items-center gap-3">
                       <span className="truncate text-xs text-muted">{EMOTION_INFO[e].label}</span>
-                      <span className="h-1.5 overflow-hidden rounded-full bg-white/8">
+                      <span className="h-1.5 overflow-hidden rounded-full bg-ink/8">
                         <span
                           className="bar-grow block h-full rounded-full"
                           style={{ width: `${analysis.scores[e] * 100}%`, background: EMOTION_INFO[e].accent, animationDelay: `${i * 60}ms` }}
@@ -224,7 +228,7 @@ export function ReadingCard({
           </div>
 
           {journal?.enabled && (
-            <div className="mt-6 space-y-2 rounded-2xl bg-white/[0.03] p-4 text-sm ring-1 ring-hairline">
+            <div className="mt-6 space-y-2 rounded-2xl bg-ink/[0.03] p-4 text-sm ring-1 ring-hairline">
               <label className="flex items-center gap-2.5">
                 <input
                   type="checkbox"

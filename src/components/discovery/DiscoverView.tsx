@@ -6,6 +6,7 @@ import { useDeferredValue, useMemo, useState } from "react";
 import { MoodOrb } from "@/components/emotion/MoodPicker";
 import { Stagger, StaggerItem } from "@/components/motion/Reveal";
 import { TiltCard } from "@/components/motion/TiltCard";
+import { Doodle } from "@/components/ui/Doodle";
 import { CollectionCard } from "@/components/music/CollectionCard";
 import { TrackRow } from "@/components/music/TrackItems";
 import { usePlayer } from "@/components/player/PlayerProvider";
@@ -22,7 +23,7 @@ const ENERGY: { value: EnergyBand; label: string }[] = [
 ];
 
 const selectCls =
-  "rounded-full bg-white/[0.04] px-4 py-2 text-sm text-ink ring-1 ring-hairline focus:outline-none focus-visible:ring-[var(--atmo-accent)] [&>option]:bg-raised";
+  "rounded-full bg-ink/[0.04] px-4 py-2 text-sm text-ink ring-1 ring-hairline focus:outline-none focus-visible:ring-[var(--atmo-accent)] [&>option]:bg-raised";
 
 export function DiscoverView() {
   const player = usePlayer();
@@ -50,7 +51,10 @@ export function DiscoverView() {
   return (
     <div className="mx-auto max-w-[1400px] px-4 pt-6 sm:px-6 md:pt-12">
       <p className="text-xs font-medium uppercase tracking-[0.28em] text-muted">Discover</p>
-      <h1 className="font-display mt-4 text-[clamp(2.4rem,6vw,4.5rem)] leading-[1.02]">Find a sound for any state.</h1>
+      <h1 className="font-display relative mt-4 inline-block text-[clamp(2.4rem,6vw,4.5rem)] leading-[1.02]">
+        Find a sound for any state.
+        <Doodle name="star" delay={0.5} float tilt={14} className="absolute -right-10 -top-3 hidden h-8 w-8 text-[var(--warm)] sm:block" />
+      </h1>
 
       <section aria-label="Collections" className="mt-12">
         <Stagger stagger={0.07} className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
@@ -82,7 +86,7 @@ export function DiscoverView() {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search titles, moods, genres, instruments…"
             aria-label="Search tracks"
-            className="w-full rounded-full bg-white/[0.04] py-4 pl-12 pr-5 text-base text-ink ring-1 ring-hairline placeholder:text-faint focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--atmo-accent)]"
+            className="w-full rounded-full bg-ink/[0.04] py-4 pl-12 pr-5 text-base text-ink ring-1 ring-hairline placeholder:text-faint focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--atmo-accent)]"
           />
         </div>
 
@@ -104,14 +108,14 @@ export function DiscoverView() {
             })}
           </div>
           <div className="flex flex-wrap gap-2">
-            <div role="radiogroup" aria-label="Energy" className="flex rounded-full bg-white/[0.04] p-1 ring-1 ring-hairline">
+            <div role="radiogroup" aria-label="Energy" className="flex rounded-full bg-ink/[0.04] p-1 ring-1 ring-hairline">
               {ENERGY.map((e) => (
                 <button
                   key={e.value}
                   role="radio"
                   aria-checked={energy === e.value}
                   onClick={() => setEnergy(e.value)}
-                  className={cn("rounded-full px-3 py-1.5 text-sm transition", energy === e.value ? "bg-white/12 text-ink" : "text-muted hover:text-ink")}
+                  className={cn("rounded-full px-3 py-1.5 text-sm transition", energy === e.value ? "bg-ink/12 text-ink" : "text-muted hover:text-ink")}
                 >
                   {e.label}
                 </button>
@@ -153,7 +157,7 @@ export function DiscoverView() {
         </div>
 
         {results.length === 0 ? (
-          <div className="mt-6 rounded-3xl bg-white/[0.03] p-10 text-center ring-1 ring-hairline">
+          <div className="mt-6 rounded-3xl bg-ink/[0.03] p-10 text-center ring-1 ring-hairline">
             <p className="font-display text-2xl">Nothing matches that yet</p>
             <p className="mt-2 text-sm text-muted">
               {vocals === "vocal"

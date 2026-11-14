@@ -23,7 +23,7 @@ export function CollectionView({ id }: { id: string }) {
         <ArrowLeft size={16} /> Discover
       </Link>
       <div className="mt-6 grid gap-8 md:grid-cols-[minmax(0,22rem)_1fr] md:items-end md:gap-12">
-        <div className="mx-auto w-full max-w-[22rem] shadow-2xl shadow-black/50">
+        <div className="mx-auto w-full max-w-[22rem] shadow-2xl shadow-[rgb(42_32_78/0.16)]">
           <Cover seed={collection.id} palette={collection.palette} rounded="rounded-[2rem]" label={`${collection.title} artwork`} />
         </div>
         <div>

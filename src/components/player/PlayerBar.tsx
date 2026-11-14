@@ -84,7 +84,7 @@ export function PlayerBar() {
               onClick={() => p.setQueueOpen(!p.queueOpen)}
               aria-pressed={p.queueOpen}
               aria-label="Queue"
-              className={cn(btn.icon, p.queueOpen && "text-[var(--atmo-accent)]")}
+              className={cn(btn.icon, p.queueOpen && "text-[var(--atmo-ink)]")}
             >
               <ListMusic size={18} />
             </button>

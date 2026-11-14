@@ -22,7 +22,7 @@ function MiniProgress() {
   const { track } = usePlayer();
   const total = duration ?? track?.duration ?? 0;
   return (
-    <div className="absolute inset-x-3 bottom-0 h-[2px] overflow-hidden rounded-full bg-white/10" aria-hidden="true">
+    <div className="absolute inset-x-3 bottom-0 h-[2px] overflow-hidden rounded-full bg-ink/10" aria-hidden="true">
       <div className="h-full bg-[var(--atmo-accent)]" style={{ width: `${total ? (currentTime / total) * 100 : 0}%` }} />
     </div>
   );
@@ -76,18 +76,18 @@ function FullPlayer() {
       </div>
 
       <div className="relative flex items-center justify-between px-4 pb-2 pt-[max(12px,env(safe-area-inset-top))]" onPointerDown={(e) => drag.start(e)} style={{ touchAction: "none" }}>
-        <button ref={closeRef} type="button" onClick={() => p.setExpanded(false)} aria-label="Close full player" className="inline-flex h-10 w-10 items-center justify-center rounded-full text-ink hover:bg-white/8">
+        <button ref={closeRef} type="button" onClick={() => p.setExpanded(false)} aria-label="Close full player" className="inline-flex h-10 w-10 items-center justify-center rounded-full text-ink hover:bg-ink/8">
           <ChevronDown size={24} />
         </button>
-        <div className="mx-auto h-1 w-10 rounded-full bg-white/25" aria-hidden="true" />
-        <div className="flex rounded-full bg-white/6 p-0.5 text-xs" role="tablist" aria-label="Player view">
+        <div className="mx-auto h-1 w-10 rounded-full bg-ink/25" aria-hidden="true" />
+        <div className="flex rounded-full bg-ink/6 p-0.5 text-xs" role="tablist" aria-label="Player view">
           {(["now", "queue"] as const).map((t) => (
             <button
               key={t}
               role="tab"
               aria-selected={tab === t}
               onClick={() => setTab(t)}
-              className={cn("rounded-full px-3 py-1.5 transition", tab === t ? "bg-white/12 text-ink" : "text-muted")}
+              className={cn("rounded-full px-3 py-1.5 transition", tab === t ? "bg-ink/12 text-ink" : "text-muted")}
             >
               {t === "now" ? "Playing" : "Queue"}
             </button>
@@ -99,19 +99,19 @@ function FullPlayer() {
         {tab === "now" ? (
           <div className="flex flex-1 flex-col justify-center gap-7 py-4">
             <motion.div
-              className="mx-auto w-full max-w-[22rem]"
+              className="mx-auto mb-7 mt-4 w-full max-w-[20rem]"
               animate={reduced ? undefined : { scale: playing ? 1 : 0.94 }}
               transition={{ type: "spring", stiffness: 200, damping: 24 }}
             >
               {/* Light ripples around the cover with the track's real spectrum. */}
               <SpectrumAura>
-                <div className="rounded-[28px] shadow-2xl shadow-black/60">
+                <div className="rounded-[28px] shadow-2xl shadow-[rgb(42_32_78/0.16)]">
                   <Cover seed={track.id} mood={track.primaryMood} artwork={track.artwork} rounded="rounded-[28px]" label={`${track.title} cover`} />
                 </div>
               </SpectrumAura>
             </motion.div>
 
-            <div className="flex items-end gap-3">
+            <div className="relative z-10 flex items-end gap-3">
               <div className="min-w-0 flex-1">
                 <p className="mb-1 text-xs uppercase tracking-[0.16em] text-faint">{EMOTION_INFO[track.primaryMood].label}</p>
                 <NowPlayingMeta large />
@@ -150,7 +150,7 @@ export function MobilePlayer() {
       <div
         role="region"
         aria-label="Music player"
-        className="glass fixed inset-x-2 z-50 flex h-[56px] items-center gap-3 rounded-2xl px-2 ring-1 ring-white/10 md:hidden"
+        className="glass fixed inset-x-2 z-50 flex h-[56px] items-center gap-3 rounded-2xl px-2 ring-1 ring-ink/10 md:hidden"
         style={{ bottom: "calc(var(--nav-h) + 8px)" }}
       >
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-2xl">

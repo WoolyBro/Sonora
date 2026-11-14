@@ -32,7 +32,7 @@ export function SiteHeader() {
           <BrandMark />
           <span className="font-display text-[22px] tracking-tight">Sonora</span>
         </Link>
-        <nav aria-label="Main" className="hidden items-center gap-1 rounded-full bg-white/[0.03] p-1 ring-1 ring-hairline md:flex">
+        <nav aria-label="Main" className="hidden items-center gap-1 rounded-full bg-ink/[0.03] p-1 ring-1 ring-hairline md:flex">
           {NAV.filter((n) => !("mobileOnly" in n)).map((n) => (
             <Link
               key={n.href}
@@ -40,7 +40,7 @@ export function SiteHeader() {
               aria-current={isActive(pathname, n.href) ? "page" : undefined}
               className={cn(
                 "rounded-full px-4 py-2 text-sm transition",
-                isActive(pathname, n.href) ? "bg-white/10 text-ink" : "text-muted hover:text-ink",
+                isActive(pathname, n.href) ? "bg-ink/10 text-ink" : "text-muted hover:text-ink",
               )}
             >
               {n.label}
@@ -49,7 +49,7 @@ export function SiteHeader() {
         </nav>
         <Link
           href="/experience"
-          className="hidden rounded-full bg-ink px-4 py-2 text-sm font-semibold text-bg transition hover:bg-white md:inline-flex"
+          className="hidden rounded-full bg-ink px-4 py-2 text-sm font-semibold text-bg transition hover:bg-ink/85 md:inline-flex"
         >
           Discover your sound
         </Link>
@@ -76,7 +76,7 @@ export function MobileNav() {
                 aria-current={active ? "page" : undefined}
                 className={cn("flex h-full flex-col items-center justify-center gap-1 text-[11px]", active ? "text-ink" : "text-faint")}
               >
-                <Icon size={20} strokeWidth={active ? 2.2 : 1.8} className={active ? "text-[var(--atmo-accent)]" : undefined} />
+                <Icon size={20} strokeWidth={active ? 2.2 : 1.8} className={active ? "text-[var(--atmo-ink)]" : undefined} />
                 {n.label}
               </Link>
             </li>

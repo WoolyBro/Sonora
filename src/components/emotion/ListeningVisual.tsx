@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from "react";
 
+import { createColorReader } from "@/lib/cssColor";
+
 /**
  * Shown while Sonora reads a check-in: a ring of sound bars rippling around a
  * breathing orb, like the room is listening. When the one-time model download
@@ -23,8 +25,11 @@ export function ListeningVisual({ progress, className = "" }: { progress?: numbe
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let raf = 0;
     let size = 0;
-    let accent = "#a89bff";
-    let warm = "#f2a97f";
+    const reader = createColorReader();
+    let accent = "rgba(168,155,255,1)";
+    let ink = "rgba(90,70,190,1)";
+    let warm = "rgba(238,138,92,1)";
+    let accentSoft = "rgba(168,155,255,0.33)";
     let shown = 0; // eased progress
     const start = performance.now();
 
@@ -35,9 +40,10 @@ export function ListeningVisual({ progress, className = "" }: { progress?: numbe
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
     const readColours = () => {
-      const s = getComputedStyle(document.documentElement);
-      accent = s.getPropertyValue("--atmo-accent").trim() || accent;
-      warm = s.getPropertyValue("--warm").trim() || warm;
+      accent = reader.css("--atmo-accent", 1);
+      accentSoft = reader.css("--atmo-accent", 0.33);
+      ink = reader.css("--atmo-ink", 1);
+      warm = reader.css("--warm", 1, [238, 138, 92]);
     };
 
     const BARS = 72;
@@ -49,8 +55,8 @@ export function ListeningVisual({ progress, className = "" }: { progress?: numbe
 
       // Soft glow behind everything
       const glow = ctx.createRadialGradient(c, c, 0, c, c, c);
-      glow.addColorStop(0, `${accent}55`);
-      glow.addColorStop(0.45, `${accent}11`);
+      glow.addColorStop(0, accentSoft);
+      glow.addColorStop(0.45, "rgba(255,255,255,0.35)");
       glow.addColorStop(1, "transparent");
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, size, size);
@@ -67,7 +73,7 @@ export function ListeningVisual({ progress, className = "" }: { progress?: numbe
           0.06 * Math.sin(a * 13 - t * 5.0);
         const len = size * (0.03 + 0.13 * Math.max(0, wave)) * intro;
         const r0 = inner + 4;
-        ctx.strokeStyle = i % 9 === 0 ? warm : accent;
+        ctx.strokeStyle = i % 9 === 0 ? warm : ink;
         ctx.globalAlpha = 0.25 + 0.6 * Math.max(0, wave);
         ctx.lineWidth = Math.max(1.5, size * 0.008);
         ctx.beginPath();
@@ -81,8 +87,9 @@ export function ListeningVisual({ progress, className = "" }: { progress?: numbe
       const breath = 1 + 0.05 * Math.sin(t * 2);
       const core = ctx.createRadialGradient(c - inner * 0.3, c - inner * 0.35, 0, c, c, inner * 0.82 * breath);
       core.addColorStop(0, "#ffffff");
-      core.addColorStop(0.35, accent);
-      core.addColorStop(1, `${accent}00`);
+      core.addColorStop(0.4, accent);
+      core.addColorStop(0.85, ink);
+      core.addColorStop(1, "rgba(255,255,255,0)");
       ctx.fillStyle = core;
       ctx.beginPath();
       ctx.arc(c, c, inner * 0.82 * breath, 0, Math.PI * 2);
@@ -94,11 +101,11 @@ export function ListeningVisual({ progress, className = "" }: { progress?: numbe
         shown += (target / 100 - shown) * 0.08;
         const r = size * 0.46;
         ctx.lineWidth = 2;
-        ctx.strokeStyle = "rgb(255 255 255 / 0.08)";
+        ctx.strokeStyle = "rgba(42,32,78,0.1)";
         ctx.beginPath();
         ctx.arc(c, c, r, 0, Math.PI * 2);
         ctx.stroke();
-        ctx.strokeStyle = accent;
+        ctx.strokeStyle = ink;
         ctx.beginPath();
         ctx.arc(c, c, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * shown);
         ctx.stroke();
@@ -128,6 +135,7 @@ export function ListeningVisual({ progress, className = "" }: { progress?: numbe
       cancelAnimationFrame(raf);
       ro.disconnect();
       document.removeEventListener("visibilitychange", onVisible);
+      reader.dispose();
     };
   }, []);
 

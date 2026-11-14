@@ -44,7 +44,7 @@ export function TrackMenu({ track, align = "right" }: { track: Track; align?: "l
     setName("");
   };
 
-  const item = "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm text-ink/90 hover:bg-white/8";
+  const item = "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm text-ink/90 hover:bg-ink/8";
 
   return (
     <div ref={ref} className="relative" onClick={(e) => e.stopPropagation()}>
@@ -68,7 +68,7 @@ export function TrackMenu({ track, align = "right" }: { track: Track; align?: "l
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, transition: { duration: 0.12 } }}
             className={cn(
-              "glass absolute top-10 z-40 w-60 rounded-2xl p-1.5 shadow-2xl shadow-black/50 ring-1 ring-white/10",
+              "glass absolute top-10 z-40 w-60 rounded-2xl p-1.5 shadow-2xl shadow-[rgb(42_32_78/0.16)] ring-1 ring-ink/10",
               align === "right" ? "right-0" : "left-0",
             )}
           >
@@ -113,7 +113,7 @@ export function TrackMenu({ track, align = "right" }: { track: Track; align?: "l
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Playlist name"
                   aria-label="New playlist name"
-                  className="min-w-0 flex-1 rounded-lg bg-white/8 px-2.5 py-1.5 text-sm text-ink placeholder:text-faint focus:outline-none focus:ring-1 focus:ring-[var(--atmo-accent)]"
+                  className="min-w-0 flex-1 rounded-lg bg-ink/8 px-2.5 py-1.5 text-sm text-ink placeholder:text-faint focus:outline-none focus:ring-1 focus:ring-[var(--atmo-accent)]"
                 />
                 <button type="submit" className="rounded-lg bg-ink px-2.5 text-sm font-medium text-bg">Add</button>
               </form>

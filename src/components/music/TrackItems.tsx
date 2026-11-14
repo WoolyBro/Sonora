@@ -34,7 +34,7 @@ export function SampleBadge() {
   return (
     <span
       title="Generated placeholder sketch. Replace with your own music in catalog.json"
-      className="rounded-full bg-white/8 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-faint"
+      className="rounded-full bg-ink/8 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-faint"
     >
       Sample
     </span>
@@ -48,7 +48,7 @@ export function TrackCard({ track, reason, onPlay }: { track: Track; reason?: st
     <article className="group relative flex w-[11.5rem] shrink-0 snap-start flex-col sm:w-[12.5rem]">
       <div
         className={cn(
-          "relative overflow-hidden rounded-2xl transition duration-500 ease-[var(--ease-soft)] md:group-hover:-translate-y-1.5 md:group-hover:shadow-2xl md:group-hover:shadow-black/50",
+          "relative overflow-hidden rounded-2xl transition duration-500 ease-[var(--ease-soft)] md:group-hover:-translate-y-1.5 md:group-hover:shadow-2xl md:group-hover:shadow-[rgb(42_32_78/0.16)]",
           isCurrent && "halo",
         )}
       >
@@ -58,7 +58,7 @@ export function TrackCard({ track, reason, onPlay }: { track: Track; reason?: st
           onClick={() => (isCurrent ? player.toggle() : onPlay())}
           aria-label={isPlaying ? `Pause ${track.title}` : `Play ${track.title}`}
           className={cn(
-            "absolute bottom-2.5 right-2.5 flex h-11 w-11 items-center justify-center rounded-full bg-ink text-bg shadow-xl shadow-black/40 transition",
+            "absolute bottom-2.5 right-2.5 flex h-11 w-11 items-center justify-center rounded-full bg-ink text-bg shadow-xl shadow-[rgb(42_32_78/0.16)] transition",
             isCurrent ? "opacity-100" : "opacity-100 md:translate-y-1 md:opacity-0 md:group-focus-within:translate-y-0 md:group-focus-within:opacity-100 md:group-hover:translate-y-0 md:group-hover:opacity-100",
           )}
         >
@@ -67,7 +67,7 @@ export function TrackCard({ track, reason, onPlay }: { track: Track; reason?: st
       </div>
       <div className="mt-3 flex items-start gap-1">
         <div className="min-w-0 flex-1">
-          <h3 className={cn("flex items-center gap-2 truncate text-[15px] font-semibold", isCurrent && "text-[var(--atmo-accent)]")}>
+          <h3 className={cn("flex items-center gap-2 truncate text-[15px] font-semibold", isCurrent && "text-[var(--atmo-ink)]")}>
             {isCurrent && <Equaliser paused={!isPlaying} />}
             <span className="truncate">{track.title}</span>
           </h3>
@@ -99,12 +99,12 @@ export function TrackRow({
   return (
     <li
       className={cn(
-        "group grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-xl px-2 py-2 transition hover:bg-white/[0.04] sm:grid-cols-[2rem_auto_1fr_auto_auto] sm:px-3",
-        isCurrent && "bg-white/[0.04]",
+        "group grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-xl px-2 py-2 transition hover:bg-ink/[0.04] sm:grid-cols-[2rem_auto_1fr_auto_auto] sm:px-3",
+        isCurrent && "bg-ink/[0.04]",
       )}
     >
       <span className="hidden w-8 justify-center text-sm tabular-nums text-faint sm:flex">
-        {isCurrent ? <Equaliser paused={!isPlaying} className="text-[var(--atmo-accent)]" /> : index !== undefined ? index + 1 : null}
+        {isCurrent ? <Equaliser paused={!isPlaying} className="text-[var(--atmo-ink)]" /> : index !== undefined ? index + 1 : null}
       </span>
       <button
         type="button"
@@ -118,7 +118,7 @@ export function TrackRow({
         </span>
       </button>
       <div className="min-w-0">
-        <p className={cn("flex items-center gap-2 truncate font-medium", isCurrent && "text-[var(--atmo-accent)]")}>
+        <p className={cn("flex items-center gap-2 truncate font-medium", isCurrent && "text-[var(--atmo-ink)]")}>
           <span className="truncate">{track.title}</span>
           {track.isSample && <span className="hidden md:inline"><SampleBadge /></span>}
         </p>

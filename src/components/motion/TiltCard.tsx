@@ -20,7 +20,7 @@ export function TiltCard({ children, className = "", max = 7 }: { children: Reac
   const rotateX = useTransform(sy, [0, 1], [max, -max]);
   const glareX = useTransform(sx, (v) => `${v * 100}%`);
   const glareY = useTransform(sy, (v) => `${v * 100}%`);
-  const glare = useMotionTemplate`radial-gradient(circle at ${glareX} ${glareY}, rgb(255 255 255 / 0.16), transparent 55%)`;
+  const glare = useMotionTemplate`radial-gradient(circle at ${glareX} ${glareY}, rgb(255 255 255 / 0.45), transparent 55%)`;
   const glareOpacity = useMotionValue(0);
   const glareFade = useSpring(glareOpacity, { stiffness: 120, damping: 20 });
 

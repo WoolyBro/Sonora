@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Manrope } from "next/font/google";
+import { Caveat, Fraunces, Manrope } from "next/font/google";
 
 import { Footer } from "@/components/layout/Footer";
 import { Providers } from "@/components/layout/Providers";
@@ -21,6 +21,14 @@ const body = Manrope({
   display: "swap",
 });
 
+// Hand-written notes next to the doodles.
+const hand = Caveat({
+  variable: "--font-hand",
+  subsets: ["latin"],
+  weight: ["500", "700"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: { default: "Sonora: your emotions have a soundtrack", template: "%s · Sonora" },
   description: "Tell Sonora how you feel in your own words and discover music that meets you where you are.",
@@ -33,8 +41,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#07080d",
-  colorScheme: "dark",
+  themeColor: "#f7f2ea",
+  colorScheme: "light",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -42,7 +50,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${display.variable} ${body.variable} antialiased`}>
+    <html lang="en" className={`${display.variable} ${body.variable} ${hand.variable} antialiased`}>
       <body className="grain min-h-dvh">
         <Providers>
           <div className="relative z-10 flex min-h-dvh flex-col">

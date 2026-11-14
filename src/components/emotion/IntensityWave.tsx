@@ -20,7 +20,7 @@ export function IntensityWave({ value, className = "" }: { value: number; classN
   };
 
   return (
-    <div className={`relative overflow-hidden rounded-3xl bg-white/[0.04] ring-1 ring-hairline ${className}`}>
+    <div className={`relative overflow-hidden rounded-3xl bg-ink/[0.04] ring-1 ring-hairline ${className}`}>
       <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full" aria-hidden="true">
         <defs>
           <linearGradient id={`${id}-g`} x1="0" y1="0" x2="0" y2="1">
