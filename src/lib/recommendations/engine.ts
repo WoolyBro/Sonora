@@ -15,7 +15,7 @@
  *   explore  — relevant but deliberately varied, chosen with maximal
  *              marginal relevance so genres and textures don't repeat.
  */
-import type { Track } from "@/lib/catalog";
+import type { Placement, Track } from "@/lib/catalog";
 import type { EmotionProfile } from "@/lib/emotion/types";
 import { EMOTIONS, EMOTION_INFO, type Emotion, type EmotionScores } from "@/lib/emotion/taxonomy";
 
@@ -157,7 +157,38 @@ const TEMPO_WORD: Record<Track["tempo"], string> = {
   fast: "Driving",
 };
 
+// ── Your placements ─────────────────────────────────────────────────────────
+// Songs filed in mood/intensity folders are played for exactly that reading:
+// e.g. Anxious / 0.25–0.5 songs come first for an anxious reading at 25–49%.
+
+const NEGATIVE: ReadonlySet<Emotion> = new Set(["LOW_SAD", "ANXIOUS_WORRIED", "ANGRY_FRUSTRATED", "STRESSED_OVERWHELMED", "NUMB_DISCONNECTED"]);
+
+export function inBand(p: Placement, intensity: number): boolean {
+  return intensity >= p.min && (intensity < p.max || (p.max >= 1 && intensity <= 1));
+}
+
+/** The placement of `track` that matches this mood at this intensity, if any. */
+export function placementFor(track: Track, mood: Emotion, intensity: number): Placement | undefined {
+  return track.placements?.find((p) => p.mood === mood && inBand(p, intensity));
+}
+
+/** The next gentler band below the current one for this mood (highest band ending at or below `intensity`'s band). */
+function gentlerBand(tracks: Track[], mood: Emotion, intensity: number): number | null {
+  const current = tracks.flatMap((t) => t.placements ?? []).find((p) => p.mood === mood && inBand(p, intensity));
+  const floor = current ? current.min : intensity;
+  const below = tracks
+    .flatMap((t) => t.placements ?? [])
+    .filter((p) => p.mood === mood && p.max <= floor + 1e-9)
+    .map((p) => p.max);
+  return below.length ? Math.max(...below) : null;
+}
+
+const pct = (x: number) => `${Math.round(x * 100)}%`;
+const bandText = (p: Placement) => `${pct(p.min)}–${pct(p.max)}`;
+
 function meetReason(track: Track, profile: EmotionProfile): string {
+  const placed = placementFor(track, profile.primaryEmotion, profile.intensity);
+  if (placed) return `One of your songs, picked for feeling ${EMOTION_INFO[placed.mood].short} at ${bandText(placed)}`;
   const lead = `${TEMPO_WORD[track.tempo]} ${track.genre.toLowerCase()}`;
   const primary = profile.primaryEmotion;
   if (track.primaryMood === primary) {
@@ -239,12 +270,17 @@ export function recommend(
       return { track, score: round(score), reason: meetReason(track, profile) };
     })
     .sort(byScore);
-  const meet = meetAll.slice(0, limit);
+  // Your songs for this exact mood + intensity lead the row (all of them), then the ranking fills it.
+  // Songs you filed for a *different* intensity of this mood stay out of this row
+  // (they're meant for other readings); "shift" and "explore" can still use them.
+  const placedHere = meetAll.filter((s) => placementFor(s.track, profile.primaryEmotion, profile.intensity));
+  const otherBand = (t: Track) => !!t.placements?.some((p) => p.mood === profile.primaryEmotion) && !placementFor(t, profile.primaryEmotion, profile.intensity);
+  const meet = [...placedHere, ...meetAll.filter((s) => !placedHere.includes(s) && !otherBand(s.track))].slice(0, Math.max(limit, placedHere.length));
   const used = new Set(meet.map((s) => s.track.id));
 
   // 2 — Shift your atmosphere
   const destMoods = SHIFT_MOODS[shiftDirection];
-  const shift = pool
+  const shiftAll = pool
     .filter((t) => !used.has(t.id))
     .map((track) => {
       const wrongWay =
@@ -260,8 +296,20 @@ export function recommend(
         recencyPenalty(track, opts.recentIds);
       return { track, score: round(score), reason: shiftReason(track, target, shiftDirection) };
     })
-    .sort(byScore)
-    .slice(0, limit);
+    .sort(byScore);
+  // For a heavy feeling, "shift" starts with your songs from the next gentler band of the same mood.
+  const gentlerMax = NEGATIVE.has(profile.primaryEmotion) ? gentlerBand(pool, profile.primaryEmotion, profile.intensity) : null;
+  const gentler =
+    gentlerMax === null
+      ? []
+      : shiftAll
+          .filter((s) => s.track.placements?.some((p) => p.mood === profile.primaryEmotion && Math.abs(p.max - gentlerMax) < 1e-9))
+          .map((s) => {
+            const p = s.track.placements!.find((q) => q.mood === profile.primaryEmotion && Math.abs(q.max - gentlerMax) < 1e-9)!;
+            return { ...s, reason: `One step gentler: your song for feeling ${EMOTION_INFO[p.mood].short} at ${bandText(p)}` };
+          });
+  const gentlerIds = new Set(gentler.map((s) => s.track.id));
+  const shift = [...gentler, ...shiftAll.filter((s) => !gentlerIds.has(s.track.id))].slice(0, Math.max(limit, gentler.length));
   for (const s of shift) used.add(s.track.id);
 
   // 3 — Explore something different (MMR for variety)

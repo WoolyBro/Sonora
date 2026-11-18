@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { catalog } from "@/lib/catalog";
-import { defaultShift, emotionalTarget, intensityFit, recommend } from "@/lib/recommendations/engine";
+import { defaultShift, emotionalTarget, inBand, intensityFit, placementFor, recommend } from "@/lib/recommendations/engine";
 
 import { makeTrack, profile } from "./helpers";
 
@@ -90,7 +90,7 @@ describe("recommend", () => {
     expect(r.preferenceRelaxed).toBe(false);
     for (const g of [r.meet, r.shift, r.explore]) for (const s of g) expect(s.track.vocals).toBe("vocal");
 
-    const relaxed = recommend(profile("CALM_PEACEFUL", 0.4), tracks, { preferences: { vocals: "vocal" } });
+    const relaxed = recommend(profile("CALM_PEACEFUL", 0.4), [...vocal.slice(0, 2), ...instr], { preferences: { vocals: "vocal" } });
     expect(relaxed.preferenceRelaxed).toBe(true);
     expect(relaxed.meet.length).toBeGreaterThan(0);
   });
@@ -100,5 +100,56 @@ describe("recommend", () => {
     const first = base.meet[0].track.id;
     const after = recommend(profile("CALM_PEACEFUL", 0.3), tracks, { recentIds: [first] });
     expect(after.meet[0].track.id).not.toBe(first);
+  });
+});
+
+describe("your placed songs (mood / intensity folders)", () => {
+  const band = (mood: "ANXIOUS_WORRIED" | "LOW_SAD", min: number, max: number) => ({ mood, min, max });
+  const mine = [
+    makeTrack("anx-low", { primaryMood: "ANXIOUS_WORRIED", placements: [band("ANXIOUS_WORRIED", 0, 0.25)] }),
+    makeTrack("anx-25a", { primaryMood: "ANXIOUS_WORRIED", placements: [band("ANXIOUS_WORRIED", 0.25, 0.5)] }),
+    makeTrack("anx-25b", { primaryMood: "ANXIOUS_WORRIED", placements: [band("ANXIOUS_WORRIED", 0.25, 0.5)] }),
+    makeTrack("anx-50", { primaryMood: "ANXIOUS_WORRIED", placements: [band("ANXIOUS_WORRIED", 0.5, 0.75)] }),
+    makeTrack("both-75", { primaryMood: "LOW_SAD", placements: [band("LOW_SAD", 0.75, 1), band("ANXIOUS_WORRIED", 0.75, 1)] }),
+  ];
+  const pool = [...mine, ...catalog.tracks.filter((t) => t.isSample)];
+
+  it("bands are [min, max), with 100% included in the top band", () => {
+    expect(inBand(band("ANXIOUS_WORRIED", 0.25, 0.5), 0.25)).toBe(true);
+    expect(inBand(band("ANXIOUS_WORRIED", 0.25, 0.5), 0.5)).toBe(false);
+    expect(inBand(band("ANXIOUS_WORRIED", 0.5, 0.75), 0.5)).toBe(true);
+    expect(inBand(band("ANXIOUS_WORRIED", 0.75, 1), 1)).toBe(true);
+    expect(placementFor(mine[1], "LOW_SAD", 0.3)).toBeUndefined();
+  });
+
+  it("an anxious reading at 40% leads 'meet your mood' with the 25–50% songs", () => {
+    const r = recommend(profile("ANXIOUS_WORRIED", 0.4), pool);
+    expect(r.meet.slice(0, 2).map((s) => s.track.id).sort()).toEqual(["anx-25a", "anx-25b"]);
+    expect(r.meet[0].reason).toMatch(/your songs.*anxious at 25%–50%/i);
+    expect(r.meet.slice(2).some((s) => s.track.id === "anx-low" || s.track.id === "anx-50")).toBe(false);
+  });
+
+  it("one song can serve several moods", () => {
+    expect(recommend(profile("LOW_SAD", 0.9), pool).meet[0].track.id).toBe("both-75");
+    expect(recommend(profile("ANXIOUS_WORRIED", 0.9), pool).meet[0].track.id).toBe("both-75");
+  });
+
+  it("'shift your atmosphere' starts one band gentler", () => {
+    const r = recommend(profile("ANXIOUS_WORRIED", 0.6), pool);
+    expect(r.meet[0].track.id).toBe("anx-50");
+    expect(r.shift[0].track.id.startsWith("anx-25")).toBe(true);
+    expect(r.shift[0].reason).toMatch(/gentler/i);
+    const lowest = recommend(profile("ANXIOUS_WORRIED", 0.1), pool);
+    expect(lowest.meet[0].track.id).toBe("anx-low");
+    expect(lowest.shift.some((s) => /gentler/i.test(s.reason))).toBe(false);
+  });
+
+  it("the real imported songs load with valid placements", () => {
+    const placed = catalog.tracks.filter((t) => t.placements?.length);
+    for (const t of placed) for (const p of t.placements!) expect(p.min).toBeLessThan(p.max);
+    const r = recommend(profile("ANXIOUS_WORRIED", 0.4), catalog.tracks);
+    if (placed.some((t) => placementFor(t, "ANXIOUS_WORRIED", 0.4))) {
+      expect(placementFor(r.meet[0].track, "ANXIOUS_WORRIED", 0.4)).toBeDefined();
+    }
   });
 });

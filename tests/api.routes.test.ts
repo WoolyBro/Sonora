@@ -49,7 +49,7 @@ describe("catalogue endpoints", () => {
 
   it("lists collections with track counts", async () => {
     const body = await (await collections.GET()).json();
-    expect(body.collections).toHaveLength(8);
+    expect(body.collections.length).toBeGreaterThanOrEqual(8);
     expect(body.collections[0].trackCount).toBe(body.collections[0].trackIds.length);
   });
 });

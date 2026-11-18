@@ -25,8 +25,10 @@ describe("catalogue", () => {
     }
   });
 
-  it("has eight collections, each with resolvable tracks", () => {
-    expect(catalog.collections).toHaveLength(8);
+  it("has the eight sample collections plus your own, each with resolvable tracks", () => {
+    const ids = catalog.collections.map((c) => c.id);
+    for (const id of ["late-night-thoughts", "quiet-mornings", "soft-nostalgia", "focus-and-flow", "emotional-reset", "warm-connections", "instrumental-escapes", "feel-good-energy"]) expect(ids).toContain(id);
+    expect(catalog.collections.length).toBeGreaterThanOrEqual(8);
     for (const c of catalog.collections) expect(c.trackIds.length).toBeGreaterThan(0);
   });
 
@@ -60,7 +62,7 @@ describe("filterTracks", () => {
       expect(t.energy).toBeLessThan(0.35);
       expect(t.collectionIds).toContain("emotional-reset");
     }
-    expect(filterTracks(catalog.tracks, { vocals: "vocal" })).toEqual([]);
+    for (const t of filterTracks(catalog.tracks, { vocals: "vocal" })) expect(t.vocals).toBe("vocal");
     expect(GENRES.length).toBeGreaterThan(4);
   });
 });
