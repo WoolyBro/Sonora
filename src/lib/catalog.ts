@@ -8,9 +8,22 @@ import * as z from "zod";
 
 import rawCatalog from "@/data/catalog.json";
 import rawManifest from "@/data/audio-manifest.json";
+import rawMySongs from "@/data/my-songs.json";
 import { EMOTIONS } from "@/lib/emotion/taxonomy";
 
 const EmotionEnum = z.enum(EMOTIONS);
+
+/**
+ * "Play this when the reading is <mood> at <min>–<max> intensity": where you
+ * filed a song in your mood/intensity folders (scripts/import_songs.py).
+ * Ranges are [min, max); a max of 1 includes 100%.
+ */
+const PlacementSchema = z.object({
+  mood: EmotionEnum,
+  min: z.number().min(0).max(1),
+  max: z.number().min(0).max(1),
+});
+export type Placement = z.infer<typeof PlacementSchema>;
 
 const TrackSchema = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),
@@ -34,6 +47,7 @@ const TrackSchema = z.object({
   isSample: z.boolean(),
   aiAssisted: z.boolean(),
   credits: z.string(),
+  placements: z.array(PlacementSchema).optional(),
 });
 
 const CollectionSchema = z.object({
@@ -95,7 +109,15 @@ export function buildCatalog(input: unknown, manifestInput: unknown = {}): Catal
   return { tracks, collections: parsed.collections };
 }
 
-export const catalog: Catalog = buildCatalog(rawCatalog, rawManifest);
+/** The sample library plus your own songs (src/data/my-songs.json), validated together. */
+export function mergeCatalogs(...parts: { collections?: unknown[]; tracks?: unknown[] }[]) {
+  return {
+    collections: parts.flatMap((p) => p.collections ?? []),
+    tracks: parts.flatMap((p) => p.tracks ?? []),
+  };
+}
+
+export const catalog: Catalog = buildCatalog(mergeCatalogs(rawMySongs, rawCatalog), rawManifest);
 
 const byId = new Map(catalog.tracks.map((t) => [t.id, t]));
 
