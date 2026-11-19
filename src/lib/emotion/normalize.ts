@@ -43,6 +43,26 @@ export function lexicalIntensity(text: string): number {
   return Math.max(-0.25, Math.min(0.25, delta));
 }
 
+/**
+ * Degree words applied to the intensity model's reading. The model is trained
+ * on tweets, where hedges are rare, so it under-reacts to "a little" or
+ * "slightly"; a hedge scales the reading down and intensifiers, exclamation
+ * marks and shouting move it part of the way toward the top. Multiplicative so
+ * a strong reading stays below 1 and a hedged one never hits 0.
+ */
+export function applyDegree(base: number, text: string): number {
+  const hedges = (text.match(HEDGES) ?? []).length;
+  const intens = Math.min(2, (text.match(INTENSIFIERS) ?? []).length);
+  const bangs = Math.min(3, (text.match(/!/g) ?? []).length);
+  const letters = text.replace(/[^a-z]/gi, "");
+  const shouting = letters.length > 8 && letters === letters.toUpperCase() ? 1 : 0;
+  let v = clamp01(base);
+  if (hedges) return v * 0.55; // a hedge outweighs any intensifier next to it ("a bit really")
+  const lift = 0.25 * intens + 0.06 * bangs + 0.15 * shouting;
+  v += (1 - v) * Math.min(0.6, lift);
+  return clamp01(v);
+}
+
 const SUPPORT_PATTERNS = [
   /\bkill(ing)? myself\b/i,
   /\bend(ing)? (it all|my life)\b/i,
@@ -85,10 +105,42 @@ export interface BuildInput {
   source: AnalysisSource;
   /** Intensity the listener set by hand. Omitted for model readings, where it's estimated. */
   intensity?: number;
+  /** The model's intensity head: 0–1 per affect (anger, fear, joy, sadness). */
+  affect?: Partial<Record<string, unknown>>;
   explanation?: string;
 }
 
 const NO_SIGNAL = 0.15;
+
+/**
+ * Which of the intensity head's four rated affects speaks for each mood. The
+ * head was trained on human ratings of anger, fear, joy and sadness; the other
+ * moods borrow the closest one (stress is fear or anger, whichever is
+ * stronger; numbness is the heaviness of sadness; warmth and calm the strength
+ * of positive feeling).
+ */
+const AFFECT_FOR: Record<Emotion, (a: Record<string, number>) => number | undefined> = {
+  LOW_SAD: (a) => a.sadness,
+  ANXIOUS_WORRIED: (a) => a.fear,
+  ANGRY_FRUSTRATED: (a) => a.anger,
+  STRESSED_OVERWHELMED: (a) => (a.fear === undefined && a.anger === undefined ? undefined : Math.max(a.fear ?? 0, a.anger ?? 0)),
+  NUMB_DISCONNECTED: (a) => a.sadness,
+  POSITIVE_JOYFUL: (a) => a.joy,
+  AFFECTIONATE_CONNECTED: (a) => a.joy,
+  CALM_PEACEFUL: (a) => a.joy,
+};
+
+/** The model's intensity for a mood, or null when the model has no intensity head. */
+export function modelIntensity(primary: Emotion, affect: BuildInput["affect"]): number | null {
+  if (!affect) return null;
+  const clean: Record<string, number> = {};
+  for (const [k, v] of Object.entries(affect)) {
+    const n = typeof v === "number" ? v : Number(v);
+    if (Number.isFinite(n)) clean[k] = clamp01(n);
+  }
+  const v = AFFECT_FOR[primary](clean);
+  return v === undefined ? null : v;
+}
 
 export function buildAnalysis(input: BuildInput): EmotionAnalysis {
   const scores = sanitizeScores(input.scores);
@@ -115,8 +167,16 @@ export function buildAnalysis(input: BuildInput): EmotionAnalysis {
     intensity = clamp01(input.intensity);
     intensityNote = "You set this yourself.";
   } else {
-    intensity = clamp01(0.3 + 0.4 * top + (secondary.length ? 0.05 : 0) + lexicalIntensity(input.text));
-    intensityNote = "Estimated from the model's signal strength plus intensity words in your text. Adjust it if it feels off.";
+    const learned = modelIntensity(primary, input.affect);
+    if (learned !== null) {
+      intensity = applyDegree(learned, input.text);
+      intensityNote =
+        "Estimated by Sonora's intensity model, trained on people's ratings of how strongly feelings come through in writing. Adjust it if it feels off.";
+    } else {
+      // Older model without an intensity head: presence probability is a weak proxy.
+      intensity = clamp01(0.3 + 0.4 * top + (secondary.length ? 0.05 : 0) + lexicalIntensity(input.text));
+      intensityNote = "Estimated from the model's signal strength plus intensity words in your text. Adjust it if it feels off.";
+    }
   }
 
   const confidence = fromText ? top : 1;

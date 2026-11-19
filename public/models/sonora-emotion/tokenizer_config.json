@@ -5,7 +5,7 @@
   "cls_token": "<s>",
   "eos_token": "</s>",
   "errors": "replace",
-  "is_local": false,
+  "is_local": true,
   "local_files_only": false,
   "mask_token": "<mask>",
   "max_length": 512,
