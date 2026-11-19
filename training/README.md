@@ -81,6 +81,70 @@ With 97 dev rows, ±3 check-ins is noise, so the choice was made on stability
 across training as well as the peak. Distillation was the only change that
 lifted the whole second half of training.
 
+## Intensity (`student_v6i`, the shipped model)
+
+`student_v5` only answered *which* moods are present. Its sigmoid probabilities
+sit at 0.95–0.99 for almost any clearly emotional text, and the app turned that
+into intensity as `0.3 + 0.4 × top + 0.05`, so nearly every check-in read **73%**.
+
+`student_v6i` adds a real intensity output, trained on human ratings:
+
+- **Data:** SemEval-2018 Task 1 "Affect in Tweets", EI-reg (English). Tweets rated
+  0–1 by crowd annotators (best–worst scaling) for the intensity of anger, fear,
+  joy or sadness. 7.1k train / 1.6k dev / 4.1k test. Downloaded from the Hugging
+  Face mirrors `Holmeister/ei_reg_{anger,fear,joy,sadness}`.
+- **Head:** one linear layer, 768 → 4, sigmoid, on the mean of the final token
+  states. Probing showed that an MLP or CLS features do no better
+  (`intensity_probe.py`).
+- **Frozen encoder first** (`intensity.py`): test Pearson 0.687, but the scores
+  were squeezed together ("a little sad" ≈ "devastated", both 0.81). Features
+  tuned for mood presence barely encode degree.
+- **Joint tune** (`intensity_joint.py`): the top 3 encoder layers are tuned on
+  EI-reg while a distillation loss holds the mood heads to `student_v5`'s own
+  outputs, on 24k Sonora training texts and on the tweets. A checkpoint is kept
+  only if dev check-in top-1 drops by no more than one row and it agrees with
+  the teacher's top mood ≥ 93% of the time. Chosen: step 663 of 1772.
+
+| | EI-reg test Pearson (mean of 4) | Check-in test top-1 (fp32) | Check-in all, int8 |
+| --- | --- | --- | --- |
+| `student_v5` + frozen head | 0.687 | 61/105 | 116/197 |
+| **`student_v6i`** | **0.713** (anger 0.69, fear 0.73, joy 0.73, sadness 0.70) | **61/105** | **115/197** (per-channel int8) |
+
+For reference, the SemEval-2018 baseline scored 0.520 and the best system 0.799.
+
+In the browser:
+
+- The graph has a second output, `intensity`, carrying anger, fear, joy and
+  sadness.
+- Each mood reads its closest affect (`AFFECT_FOR` in `src/lib/emotion/normalize.ts`).
+  Stress uses the larger of fear and anger, numbness uses sadness, and warmth
+  and calm use joy.
+- The output is stretched from 0.25–0.90 to 0–1. That range covers roughly the
+  5th to 95th percentile of the model's readings on the check-in set (stored as
+  `intensity.calibration` in `sonora_meta.json`).
+- Degree words then adjust the result (`applyDegree`). The tweets contain
+  almost no hedges, so the model under-reacts to "a little" or "slightly". A
+  hedge multiplies the reading by 0.55, and intensifiers lift it part of the way
+  toward 1.
+
+Resulting readings:
+
+| Check-in | Intensity |
+| --- | --- |
+| "i'm a little sad today" | 44% |
+| "i'm devastated, i can't stop crying…" | 83% |
+| "a bit annoyed at my roommate" | 47% |
+| "i'm furious, i want to scream…" | 99% |
+| "today was nice" | 72% |
+| "best day of my life!!!…" | 96% |
+
+**Limits:**
+- Tweets aren't check-ins, and there is no hand-rated check-in intensity set
+  yet. A few hundred check-ins with a 0–1 intensity rating would allow proper
+  calibration and an honest score.
+- The NRC Emotion Intensity Lexicon (word-level human ratings, non-commercial)
+  would be a natural addition for degree words, but it wasn't downloaded here.
+
 ## Reproduce
 
 ```bash
@@ -99,7 +163,15 @@ python3 -m venv .venv && .venv/bin/pip install torch transformers datasets panda
 cd .. && training/.venv/bin/python scripts/export_emotion_model.py --model training/runs/student_v5 \
   --eval ~/Desktop/Ideapad/VS/Python/Music/emotion-music-ai/data/annotations/checkin_eval_v1.csv \
   --out public/models/sonora-emotion
+# intensity: frozen-head probe and init, then the joint tune (~20 min), then export
+.venv/bin/python intensity.py
+.venv/bin/python intensity_joint.py --out runs/student_v6i
+cd .. && training/.venv/bin/python scripts/export_emotion_model.py --model training/runs/student_v6i \
+  --eval ~/Desktop/Ideapad/VS/Python/Music/emotion-music-ai/data/annotations/checkin_eval_v1.csv \
+  --out public/models/sonora-emotion --calibration 0.25,0.9 --per-channel
 ```
+
+The EI-reg parquet files go in `data/raw/ei_reg/` as `{emotion}_{split}.parquet`.
 
 `data/`, `runs/` and `.venv/` are git-ignored (datasets and checkpoints are large).
 SemEval-2018 (`build_data.py` still builds it, as `semeval`) was tested and left

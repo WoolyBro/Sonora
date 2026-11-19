@@ -21,6 +21,8 @@ type Meta = {
   masked_heads?: string[];
   max_len?: number;
   files?: Record<string, FileInfo>;
+  /** Present when the model has an intensity head (see training/intensity_joint.py). */
+  intensity?: { outputs: string[]; calibration?: { lo: number; hi: number } };
 };
 type Loaded = {
   tokenizer: Awaited<ReturnType<typeof AutoTokenizer.from_pretrained>>;
@@ -28,6 +30,7 @@ type Loaded = {
   headOrder: string[];
   masked: Set<string>;
   maxLen: number;
+  intensity: Meta["intensity"] | null;
 };
 type Fetched = { status: number; bytes: Uint8Array | null; type: string };
 
@@ -171,10 +174,32 @@ async function load(): Promise<Loaded> {
     headOrder: meta.head_order,
     masked: new Set(meta.masked_heads ?? []),
     maxLen: meta.max_len ?? 128,
+    intensity: meta.intensity ?? null,
   };
 }
 
 const sigmoid = (x: number) => 1 / (1 + Math.exp(-x));
+
+type Tensorish = { data: ArrayLike<number>; dims: number[] };
+
+/**
+ * The intensity head is a second graph output. transformers.js keeps only
+ * `logits` by name and passes any other outputs along as `attentions`, so pick
+ * it out by shape. Values are 0–1 per affect (anger, fear, joy, sadness),
+ * stretched by the calibration in sonora_meta.json. Null for older models.
+ */
+function readIntensity(m: Loaded, output: unknown): Record<string, number> | null {
+  if (!m.intensity) return null;
+  const extras = (output as { attentions?: Tensorish[] }).attentions ?? [];
+  const t = extras.find((x) => x?.dims?.at(-1) === m.intensity!.outputs.length);
+  if (!t) return null;
+  const { lo = 0, hi = 1 } = m.intensity.calibration ?? {};
+  const affect: Record<string, number> = {};
+  m.intensity.outputs.forEach((name, i) => {
+    affect[name] = Math.min(1, Math.max(0, (Number(t.data[i]) - lo) / (hi - lo)));
+  });
+  return affect;
+}
 
 self.onmessage = async (event: MessageEvent<{ id: number; type: "load" | "analyze"; text?: string }>) => {
   const { id, type, text } = event.data;
@@ -193,7 +218,7 @@ self.onmessage = async (event: MessageEvent<{ id: number; type: "load" | "analyz
       // Heads that never received training data are placeholders, not measurements.
       scores[label] = m.masked.has(label) ? 0 : sigmoid(logits[i]);
     });
-    postMessage({ id, type: "result", scores });
+    postMessage({ id, type: "result", scores, affect: readIntensity(m, output) });
   } catch (err) {
     loading = null; // allow a retry after a network failure
     postMessage({ id, type: "error", message: err instanceof Error ? err.message : String(err) });

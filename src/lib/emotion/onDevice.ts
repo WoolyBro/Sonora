@@ -92,6 +92,9 @@ export async function analyzeOnDevice(
 ): Promise<EmotionAnalysis> {
   if (!ready) await loadOnDeviceModel(onProgress);
   onRunning?.();
-  const { scores } = await call<{ scores: Record<string, number> }>("analyze", text);
-  return buildAnalysis({ text, scores, source: "on-device" });
+  const { scores, affect } = await call<{ scores: Record<string, number>; affect?: Record<string, number> | null }>(
+    "analyze",
+    text,
+  );
+  return buildAnalysis({ text, scores, affect: affect ?? undefined, source: "on-device" });
 }

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  applyDegree,
   buildAnalysis,
   detectSupportNeed,
   lexicalIntensity,
@@ -48,6 +49,37 @@ describe("buildAnalysis", () => {
     expect(a.intensity).toBeLessThanOrEqual(1);
     expect(a.intensityNote).toMatch(/signal strength/);
     expect(a.confidenceNote).toMatch(/run high/);
+  });
+
+  it("takes intensity from the model's intensity head, not the mood probability", () => {
+    // Same near-certain mood probability, different rated intensity: the reading must differ.
+    const mild = buildAnalysis({ text: "i'm a little sad today", scores: { LOW_SAD: 0.99 }, affect: { sadness: 0.3 }, source: "on-device" });
+    const heavy = buildAnalysis({
+      text: "i'm devastated and can't stop crying",
+      scores: { LOW_SAD: 0.99 },
+      affect: { sadness: 0.85 },
+      source: "on-device",
+    });
+    expect(mild.intensity).toBeLessThan(0.3); // "a little" hedge nudges it down
+    expect(heavy.intensity).toBeCloseTo(0.85, 2);
+    expect(heavy.intensityNote).toMatch(/intensity model/);
+  });
+
+  it("scales the model reading by degree words", () => {
+    expect(applyDegree(0.8, "i'm a little sad")).toBeCloseTo(0.44, 2);
+    expect(applyDegree(0.8, "i'm sad")).toBe(0.8);
+    expect(applyDegree(0.8, "i'm really, really sad")).toBeCloseTo(0.9, 2);
+    expect(applyDegree(0.95, "SO SO ANGRY!!!")).toBeLessThanOrEqual(1);
+  });
+
+  it("maps each mood to its closest rated affect", () => {
+    const affect = { anger: 0.2, fear: 0.7, joy: 0.4, sadness: 0.6 };
+    const read = (mood: string) => buildAnalysis({ text: "today", scores: { [mood]: 0.9 }, affect, source: "on-device" }).intensity;
+    expect(read("ANXIOUS_WORRIED")).toBe(0.7);
+    expect(read("STRESSED_OVERWHELMED")).toBe(0.7); // fear or anger, whichever is stronger
+    expect(read("ANGRY_FRUSTRATED")).toBe(0.2);
+    expect(read("NUMB_DISCONNECTED")).toBe(0.6);
+    expect(read("CALM_PEACEFUL")).toBe(0.4);
   });
 
   it("marks weak signals as uncertain rather than presenting them as fact", () => {

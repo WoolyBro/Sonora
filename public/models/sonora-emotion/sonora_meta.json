@@ -1,5 +1,5 @@
 {
-  "source_checkpoint": "student_v5",
+  "source_checkpoint": "student_v6i",
   "base_model": "j-hartmann/emotion-english-distilroberta-base",
   "head_order": [
     "LOW_SAD",
@@ -24,22 +24,35 @@
   },
   "max_len": 128,
   "output": "sigmoid presence probabilities (multi-label), not calibrated intensity",
+  "intensity": {
+    "outputs": [
+      "anger",
+      "fear",
+      "joy",
+      "sadness"
+    ],
+    "data": "SemEval-2018 Task 1 EI-reg (human best-worst-scaled intensity ratings)",
+    "calibration": {
+      "lo": 0.25,
+      "hi": 0.9
+    }
+  },
   "files": {
     "config.json": {
       "bytes": 1295,
       "sha256": "0c8e7f53d6375f4a83975a7b57325a331692d5c0898d1589062c0d985be6c800"
     },
     "onnx/model_quantized.onnx": {
-      "bytes": 83054018,
-      "sha256": "b5bbfbd83df10074fb489cd94112373380bbbc9c49c34a6c1459463d4c9d381e"
+      "bytes": 83258640,
+      "sha256": "fb4408440a144ab9cb28184454805fb8b47942c9ec0251ce49c38ee5a6c617c4"
     },
     "tokenizer.json": {
       "bytes": 3558900,
       "sha256": "ca14bc374ac4b23ba26396e94788eb92fa03e2b8a9405b792e47457baac297cd"
     },
     "tokenizer_config.json": {
-      "bytes": 579,
-      "sha256": "f2b787c188939318f4cfb86d5689df2c055522362c7ae48a701841647745ae40"
+      "bytes": 578,
+      "sha256": "83ec6969582075d325ba1d5856228ac590778ac21da12c589cd31185dd952c05"
     }
   }
 }
