@@ -28,7 +28,7 @@ export function SiteHeader() {
         Skip to content
       </a>
       <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-4 sm:px-6 md:h-20">
-        <Link href="/" className="flex items-center gap-2.5 rounded-xl" aria-label="Sonora home">
+        <Link href="/" className="tap relative flex items-center gap-2.5 rounded-xl" aria-label="Sonora home">
           <BrandMark />
           <span className="font-display text-[22px] tracking-tight">Sonora</span>
         </Link>

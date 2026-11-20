@@ -8,9 +8,9 @@ export const btn = {
   secondary:
     "inline-flex items-center justify-center gap-2 rounded-full bg-surface-strong px-5 py-2.5 text-sm font-medium text-ink ring-1 ring-hairline transition hover:bg-white hover:shadow-sm active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50",
   ghost:
-    "inline-flex items-center justify-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-muted transition hover:bg-ink/5 hover:text-ink disabled:opacity-40",
+    "tap relative inline-flex items-center justify-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-muted transition hover:bg-ink/5 hover:text-ink disabled:opacity-40",
   icon:
-    "inline-flex h-9 w-9 items-center justify-center rounded-full text-muted transition hover:bg-ink/8 hover:text-ink disabled:cursor-not-allowed disabled:opacity-30",
+    "tap relative inline-flex h-9 w-9 items-center justify-center rounded-full text-muted transition hover:bg-ink/8 hover:text-ink disabled:cursor-not-allowed disabled:opacity-30",
   chip:
     "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm ring-1 transition",
 };

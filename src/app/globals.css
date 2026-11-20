@@ -15,18 +15,20 @@
   --hairline: rgb(42 32 78 / 0.1);
   --text: #1f1a30;
   --text-muted: #5a5470;
-  --text-faint: #8a8499;
-  --accent: #6d5dfc;
-  --accent-strong: #5a49f0;
+  /* Every text token clears WCAG AA (4.5:1) on --bg and on white surfaces. */
+  --text-faint: #6a647f;
+  --accent: #6252ee;
+  --accent-strong: #5544e6;
   --warm: #ee8a5c;
-  --danger: #cf3f4a;
+  --danger: #b8323d;
 
   /* Mood-driven ambient light (defaults: dusk violet). */
   --atmo-1: #3b2f7a;
   --atmo-2: #1d2a5c;
   --atmo-3: #6b3f6b;
   --atmo-accent: #a89bff;
-  --atmo-ink: color-mix(in oklab, var(--atmo-accent) 48%, #2a1f5c);
+  /* 40% keeps even the palest moods (joy, calm) at 4.6:1+ as text on the paper. */
+  --atmo-ink: color-mix(in oklab, var(--atmo-accent) 40%, #2a1f5c);
 
   --player-h: 0px;
   --player-height: 88px;
@@ -68,13 +70,26 @@
 }
 .atmo-blob--2 {
   width: 60vmax; height: 60vmax; right: -22vmax; top: 10vh;
-  background: radial-gradient(circle at center, color-mix(in oklab, var(--atmo-2) 38%, transparent) 0%, transparent 60%);
+  /* A pale tint of the mood's deep colour: a dark blend at low opacity read as a grey smudge on cream. */
+  background: radial-gradient(circle at center, color-mix(in oklab, color-mix(in oklab, var(--atmo-2) 30%, #ffffff) 75%, transparent) 0%, transparent 60%);
   animation: drift-b 32s ease-in-out infinite;
 }
 .atmo-blob--3 {
   width: 55vmax; height: 55vmax; left: 20vw; bottom: -35vmax;
   background: radial-gradient(circle at center, color-mix(in oklab, var(--warm) 55%, transparent) 0%, transparent 60%);
   animation: drift-a 38s ease-in-out infinite reverse;
+}
+
+/* Touch targets: a hit area of at least 44×44px around small controls without
+   changing how they look. The element itself needs `relative`. */
+.tap::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100%, 44px);
+  height: max(100%, 44px);
+  transform: translate(-50%, -50%);
 }
 
 .page-pad {

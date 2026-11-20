@@ -209,7 +209,7 @@ export function Composer({
         <button
           type="button"
           onClick={onPickManually}
-          className="mt-8 text-sm text-muted underline decoration-ink/25 underline-offset-4 hover:text-ink"
+          className="tap relative mt-8 text-sm text-muted underline decoration-ink/25 underline-offset-4 hover:text-ink"
         >
           Rather not write? Pick a mood yourself
         </button>

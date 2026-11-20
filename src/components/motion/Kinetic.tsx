@@ -427,7 +427,7 @@ export function MoodReel({ className = "" }: { className?: string }) {
                 tabIndex={hidden ? -1 : 0}
                 aria-pressed={on}
                 onClick={() => setActive(i)}
-                className="font-display flex items-center gap-3 whitespace-nowrap text-[clamp(1.6rem,5.6vw,2.2rem)] leading-none transition-colors duration-500 focus-visible:outline-none focus-visible:underline"
+                className="font-display flex h-full items-center gap-3 whitespace-nowrap text-[clamp(1.6rem,5.6vw,2.2rem)] leading-none transition-colors duration-500 focus-visible:outline-none focus-visible:underline"
                 style={{ color: on ? inkFor(eInfo.accent, 62) : "color-mix(in oklab, var(--text) 45%, transparent)" }}
               >
                 <motion.span

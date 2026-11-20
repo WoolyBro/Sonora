@@ -21,7 +21,7 @@ export function FavouriteButton({ trackId, title, className, size = 18 }: { trac
         toast(on ? "Saved to favourites" : "Removed from favourites");
       }}
       className={cn(
-        "inline-flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-ink/8 active:scale-90",
+        "tap relative inline-flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-ink/8 active:scale-90",
         fav ? "text-[var(--atmo-ink)]" : "text-muted hover:text-ink",
         className,
       )}
