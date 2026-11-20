@@ -86,7 +86,7 @@ export default function Home() {
       <section aria-labelledby="how" className="mx-auto max-w-[1400px] px-4 sm:px-6">
         <div className="grid gap-12 md:grid-cols-[0.8fr_1.2fr] md:gap-16">
           <Reveal>
-            <ProximityGroup as="h2" id="how" className="font-display relative text-5xl leading-[1.02] sm:text-6xl">
+            <ProximityGroup as="h2" id="how" className="font-grotesk-tight relative text-5xl leading-[0.98] sm:text-6xl">
               <ProxWords text="From a feeling to a sound in" />{" "}
               <span className="relative inline-block">
                 <ProxWords text="three" />
@@ -94,7 +94,7 @@ export default function Home() {
               </span>{" "}
               <ProxWords text="steps." />
             </ProximityGroup>
-            <p className="mt-5 max-w-md text-muted">
+            <p className="mt-9 max-w-md text-muted">
               Sonora reads the emotional texture of what you write across eight states, then matches it against the mood, energy and
               feel of every track in the library.
             </p>
@@ -127,7 +127,7 @@ export default function Home() {
       <section aria-labelledby="collections" className="mx-auto mt-28 max-w-[1400px] px-4 sm:px-6">
         <div className="mb-8 flex items-end justify-between gap-4">
           <Reveal>
-            <ProximityGroup as="h2" id="collections" className="font-display flex items-center gap-3 text-5xl sm:text-6xl">
+            <ProximityGroup as="h2" id="collections" className="font-serif-roman flex items-center gap-3 text-5xl sm:text-6xl">
               <span>
                 <ProxWords text="Rooms to step into" />
               </span>
