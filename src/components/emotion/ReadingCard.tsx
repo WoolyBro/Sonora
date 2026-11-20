@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Info, LifeBuoy, RotateCcw } from "lucide-react";
 
+import { BlurType } from "@/components/motion/Kinetic";
 import { CountUp, EASE_OUT, SplitWords, Stagger, StaggerItem } from "@/components/motion/Reveal";
 import { Doodle } from "@/components/ui/Doodle";
 import { btn, chipState, cn } from "@/components/ui/styles";
@@ -133,7 +134,9 @@ export function ReadingCard({
             </motion.p>
           )}
 
-          <p className="mt-5 text-lg leading-relaxed text-ink/90">{edited ? "Adjusted by you. Sonora will follow your lead." : analysis.explanation}</p>
+          <p className="mt-5 text-lg leading-relaxed text-ink/90">
+            <BlurType text={edited ? "Adjusted by you. Sonora will follow your lead." : analysis.explanation} delay={0.45} />
+          </p>
 
           <details className="group mt-6 rounded-2xl bg-ink/[0.03] p-4 text-sm ring-1 ring-hairline">
             <summary className="flex cursor-pointer list-none items-center gap-2 text-muted marker:hidden">

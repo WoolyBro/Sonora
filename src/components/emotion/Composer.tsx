@@ -9,9 +9,13 @@ import {
   Stagger,
   StaggerItem,
 } from "@/components/motion/Reveal";
+import { CyclingWord, ProximityGroup } from "@/components/motion/Kinetic";
 import { Doodle, HandNote } from "@/components/ui/Doodle";
 import { btn, cn } from "@/components/ui/styles";
 import { MAX_INPUT_CHARS } from "@/lib/emotion/normalize";
+
+/** Cycled in the empty box, as gentle prompts rather than options. */
+const HINT_WORDS = ["heavy", "restless", "light", "tender", "stretched thin", "quiet", "buzzing", "foggy", "hopeful"];
 
 export const EXAMPLE_PROMPTS = [
   "I have had a stressful day and cannot seem to switch off.",
@@ -72,10 +76,10 @@ export function Composer({
       <p className="text-xs font-medium uppercase tracking-[0.28em] text-muted">
         Check in
       </p>
-      <h1 className="font-display relative mt-4 text-[clamp(2.4rem,6vw,4.5rem)] leading-[1.02]">
-        <SplitWords text="How are you feeling today?" stagger={0.07} />
+      <ProximityGroup as="h1" className="font-display relative mt-4 text-[clamp(2.4rem,6vw,4.5rem)] leading-[1.02]">
+        <SplitWords text="How are you feeling today?" stagger={0.07} letters />
         <Doodle name="sparkle" delay={0.9} float tilt={10} className="absolute -right-2 -top-4 hidden h-10 w-10 text-[var(--warm)] md:block lg:-right-12" />
-      </h1>
+      </ProximityGroup>
       <Reveal delay={0.35} y={10}>
         <p className="mt-4 max-w-xl text-lg text-muted">
           There&rsquo;s no right way to describe it. Just write what comes
@@ -103,6 +107,15 @@ export function Composer({
             <label htmlFor="feeling" className="sr-only">
               Describe how you&rsquo;re feeling
             </label>
+            <div className="relative">
+            {!value && (
+              <p
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-x-0 top-0 px-4 pt-4 text-lg leading-relaxed text-faint sm:text-xl"
+              >
+                Today feels like <CyclingWord words={HINT_WORDS} className="text-[color-mix(in_oklab,var(--atmo-ink)_70%,transparent)]" />…
+              </p>
+            )}
             <textarea
               id="feeling"
               ref={ref}
@@ -119,11 +132,11 @@ export function Composer({
                 }
               }}
               rows={5}
-              placeholder="Today feels like…"
               aria-describedby="feeling-help feeling-count"
               aria-invalid={over || undefined}
-              className="block w-full resize-none bg-transparent px-4 pt-4 text-lg leading-relaxed text-ink placeholder:text-faint focus:outline-none sm:text-xl"
+              className="relative block w-full resize-none bg-transparent px-4 pt-4 text-lg leading-relaxed text-ink focus:outline-none sm:text-xl"
             />
+            </div>
             <div className="flex items-center justify-between gap-3 px-3 pb-2 pt-1">
               <span
                 id="feeling-count"

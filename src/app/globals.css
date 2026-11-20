@@ -258,6 +258,7 @@ body {
 .orbit-bob { animation: orbit-bob 5s ease-in-out infinite; }
 
 /* A slow band of light travelling across text (hero "soundtrack.") */
+@keyframes label-spin { to { transform: rotate(360deg); } }
 @keyframes sheen { from { background-position: 120% 0; } to { background-position: -120% 0; } }
 .text-sheen {
   background-image: linear-gradient(105deg, var(--atmo-ink) 0%, var(--atmo-ink) 38%, var(--warm) 50%, var(--atmo-ink) 62%, var(--atmo-ink) 100%);
