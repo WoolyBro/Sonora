@@ -247,6 +247,51 @@ export function CyclingWord({ words, interval = 2400, className }: { words: stri
 
 /* ------------------------------------------------------------------ */
 
+/** A deterministic, music-like contour of bar heights as Wavefont digits (0 = low, 9 = high). */
+function contour(length: number, seed: number) {
+  let out = "";
+  for (let i = 0; i < length; i++) {
+    const v = 0.5 + 0.5 * Math.sin(i * 0.55 + seed) * Math.sin(i * 0.17 + seed * 2) + 0.18 * Math.sin(i * 1.9 + seed * 3);
+    out += String(Math.max(0, Math.min(9, Math.round(v * 9))));
+  }
+  return out;
+}
+
+/**
+ * A waveform made of type: Wavefont draws each digit as a bar, so a string
+ * of digits reads as audio. It scrolls slowly while on screen, like a track
+ * playing; still for reduced motion. Purely decorative.
+ */
+export function WaveText({ length = 32, seed = 1, className = "" }: { length?: number; seed?: number; className?: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [shift, setShift] = useState(0);
+  const reduced = useReducedMotion();
+  const base = contour(length * 2, seed);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || reduced) return;
+    let id = 0;
+    const io = new IntersectionObserver(([entry]) => {
+      window.clearInterval(id);
+      if (entry.isIntersecting) id = window.setInterval(() => setShift((n) => (n + 1) % length), 160);
+    });
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      window.clearInterval(id);
+    };
+  }, [reduced, length]);
+
+  return (
+    <span ref={ref} aria-hidden="true" className={`font-wave select-none whitespace-nowrap ${className}`}>
+      {base.slice(shift, shift + length)}
+    </span>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+
 const inkFor = (accent: string, amount = 55) => `color-mix(in oklab, ${accent} ${amount}%, #2a1f5c)`;
 
 /** Feeling words in each mood's colour, interleaved so neighbours differ. */
@@ -361,7 +406,7 @@ export function FeelingsTicker({ className = "" }: { className?: string }) {
         </defs>
         <g mask="url(#feelings-mask)">
           <path d={wavePath()} fill="none" stroke="var(--atmo-ink)" strokeOpacity="0.12" strokeWidth="1.5" strokeDasharray="2 10" strokeLinecap="round" transform="translate(0 30)" />
-          <text className="font-display" fontSize="44" fontStyle="italic" dominantBaseline="middle">
+          <text className="font-accent" fontSize="46" dominantBaseline="middle">
             <textPath ref={textRef} href="#feelings-wave" startOffset="0">
               {run(0)}
               {run(1)}
@@ -419,16 +464,16 @@ export function MoodReel({ className = "" }: { className?: string }) {
               key={e}
               className="absolute inset-x-0 top-1/2 -mt-[29px] flex h-[58px] origin-left items-center"
               initial={false}
-              animate={{ y: off * ROW, scale: on ? 1 : 0.62, opacity: hidden ? 0 : on ? 1 : 0.55 - Math.abs(off) * 0.12 }}
+              animate={{ y: off * ROW, scale: on ? 1 : 0.62, opacity: hidden ? 0 : on ? 1 : Math.abs(off) === 1 ? 0.85 : 0.4 }}
               transition={{ type: "spring", stiffness: 140, damping: 22 }}
             >
               <button
                 type="button"
-                tabIndex={hidden ? -1 : 0}
+                tabIndex={Math.abs(off) > 1 ? -1 : 0} // the faded edges of the dial stay clickable, not tab stops
                 aria-pressed={on}
                 onClick={() => setActive(i)}
                 className="font-display flex h-full items-center gap-3 whitespace-nowrap text-[clamp(1.6rem,5.6vw,2.2rem)] leading-none transition-colors duration-500 focus-visible:outline-none focus-visible:underline"
-                style={{ color: on ? inkFor(eInfo.accent, 62) : "color-mix(in oklab, var(--text) 45%, transparent)" }}
+                style={{ color: on ? inkFor(eInfo.accent, 62) : "var(--text-muted)" }}
               >
                 <motion.span
                   aria-hidden="true"

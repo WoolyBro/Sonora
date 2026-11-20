@@ -13,13 +13,15 @@
   --surface: rgb(255 255 255 / 0.58);
   --surface-strong: rgb(255 255 255 / 0.82);
   --hairline: rgb(42 32 78 / 0.1);
-  --text: #1f1a30;
-  --text-muted: #5a5470;
+  --text: #261a2c;
+  --text-muted: #5a4d63;
   /* Every text token clears WCAG AA (4.5:1) on --bg and on white surfaces. */
   --text-faint: #6a647f;
   --accent: #6252ee;
   --accent-strong: #5544e6;
   --warm: #ee8a5c;
+  /* Third ambient light. Defaults to warm; the landing page swaps in sea-glass. */
+  --atmo-glow: var(--warm);
   --danger: #b8323d;
 
   /* Mood-driven ambient light (defaults: dusk violet). */
@@ -35,6 +37,16 @@
   --nav-h: 0px;
   color-scheme: light;
   transition: --atmo-1 1.4s ease, --atmo-2 1.4s ease, --atmo-3 1.4s ease, --atmo-accent 1.4s ease;
+}
+
+/* Landing golden hour, in CSS so the first paint is already right (Atmosphere
+   sets the same values once it runs; see LANDING_ATMOSPHERE). */
+:root:has([data-landing]) {
+  --atmo-1: #7a2e4f;
+  --atmo-2: #b0546e;
+  --atmo-3: #c9673a;
+  --atmo-accent: #ff9a6e;
+  --atmo-glow: #86cfc2;
 }
 
 @media (max-width: 767px) {
@@ -76,7 +88,7 @@
 }
 .atmo-blob--3 {
   width: 55vmax; height: 55vmax; left: 20vw; bottom: -35vmax;
-  background: radial-gradient(circle at center, color-mix(in oklab, var(--warm) 55%, transparent) 0%, transparent 60%);
+  background: radial-gradient(circle at center, color-mix(in oklab, var(--atmo-glow) 55%, transparent) 0%, transparent 60%);
   animation: drift-a 38s ease-in-out infinite reverse;
 }
 
@@ -114,6 +126,8 @@
   --font-sans: var(--font-body);
   --font-display: var(--font-display);
   --font-hand: var(--font-hand);
+  --font-accent: var(--font-accent);
+  --font-wave: var(--font-wave);
   --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -145,7 +159,23 @@ body {
 .font-display {
   font-family: var(--font-display), ui-serif, Georgia, serif;
   font-optical-sizing: auto;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
+}
+
+/* The italic accent word set inside display headlines. */
+.font-accent {
+  font-family: var(--font-accent), ui-serif, Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+
+/* Wavefont: every character is a bar, so text reads as a waveform. Decorative. */
+.font-wave {
+  font-family: var(--font-wave), monospace;
+  font-variation-settings: "ROND" 100, "YELA" 0;
+  letter-spacing: 0.04em;
+  line-height: 1;
 }
 
 /* Film grain over the background gradient (it sits below the content layer,
