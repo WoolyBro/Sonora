@@ -131,3 +131,14 @@ export const DEFAULT_ATMOSPHERE = {
   palette: ["#3b2f7a", "#1d2a5c", "#6b3f6b"] as [string, string, string],
   accent: "#a89bff",
 };
+
+/**
+ * The landing page's golden hour: apricot light, a pale rose haze and a
+ * sea-glass glow, with a dusty-plum ink (5.9:1 on the paper). Used on "/"
+ * until a mood or a playing track takes over.
+ */
+export const LANDING_ATMOSPHERE = {
+  palette: ["#7a2e4f", "#b0546e", "#c9673a"] as [string, string, string],
+  accent: "#ff9a6e",
+  glow: "#86cfc2",
+};

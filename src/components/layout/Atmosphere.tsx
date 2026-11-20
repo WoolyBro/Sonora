@@ -1,9 +1,10 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
 import { usePlayer } from "@/components/player/PlayerProvider";
-import { DEFAULT_ATMOSPHERE, EMOTION_INFO, type Emotion } from "@/lib/emotion/taxonomy";
+import { DEFAULT_ATMOSPHERE, EMOTION_INFO, LANDING_ATMOSPHERE, type Emotion } from "@/lib/emotion/taxonomy";
 
 import { DotField } from "./DotField";
 
@@ -18,17 +19,20 @@ export function AtmosphereProvider({ children }: { children: ReactNode }) {
   const [explicit, setExplicit] = useState<Emotion | null>(null);
   const { track, status } = usePlayer();
 
-  // Priority: a mood the page set > the playing track's mood > default dusk.
+  // Priority: a mood the page set > the playing track's mood > the landing's golden hour / default dusk.
   const mood = explicit ?? (track && status !== "idle" ? track.primaryMood : null);
+  const landing = usePathname() === "/";
 
   useEffect(() => {
     const root = document.documentElement.style;
-    const { palette, accent } = mood ? EMOTION_INFO[mood] : DEFAULT_ATMOSPHERE;
+    const { palette, accent } = mood ? EMOTION_INFO[mood] : landing ? LANDING_ATMOSPHERE : DEFAULT_ATMOSPHERE;
     root.setProperty("--atmo-1", palette[0]);
     root.setProperty("--atmo-2", palette[1]);
     root.setProperty("--atmo-3", palette[2]);
     root.setProperty("--atmo-accent", accent);
-  }, [mood]);
+    if (!mood && landing) root.setProperty("--atmo-glow", LANDING_ATMOSPHERE.glow);
+    else root.removeProperty("--atmo-glow");
+  }, [mood, landing]);
 
   return (
     <AtmosphereContext.Provider value={setExplicit}>
