@@ -9,7 +9,7 @@ vi.mock("next/font/google", () => {
     // layout.tsx
     "Bricolage_Grotesque", "Caveat", "Imbue", "Instrument_Serif", "Wavefont",
     // components/motion/moodType.ts
-    "Climate_Crisis", "Comfortaa", "Cormorant_Garamond", "Dela_Gothic_One", "Gluten", "Ms_Madi", "Shantell_Sans", "Space_Mono",
+    "Bodoni_Moda", "Cormorant_Garamond", "Fraunces", "Italiana", "Jost", "Ms_Madi", "Newsreader", "Playfair_Display",
   ];
   return Object.fromEntries(fonts.map((name) => [name, loader]));
 });
