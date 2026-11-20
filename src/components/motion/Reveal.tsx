@@ -108,8 +108,11 @@ export function SplitWords({
   delay = 0,
   stagger = 0.06,
   immediate = true,
+  letters = false,
 }: {
   text: string;
+  /** Split each word into `data-prox` letters for a surrounding ProximityGroup. */
+  letters?: boolean;
   className?: string;
   wordClassName?: string;
   delay?: number;
@@ -135,7 +138,13 @@ export function SplitWords({
               shown: { y: 0, opacity: 1, filter: "blur(0px)", transition: { duration: 0.9, ease: EASE_OUT } },
             }}
           >
-            {w}
+            {letters
+              ? Array.from(w).map((ch, j) => (
+                  <span key={j} data-prox="">
+                    {ch}
+                  </span>
+                ))
+              : w}
           </motion.span>
           {i < words.length - 1 && " "}
         </span>

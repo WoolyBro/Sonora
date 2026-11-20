@@ -4,6 +4,7 @@ import { AnimatePresence, motion, useDragControls } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
+import { OrbitText } from "@/components/motion/Kinetic";
 import { Cover } from "@/components/music/Cover";
 import { FavouriteButton } from "@/components/music/FavouriteButton";
 import { cn } from "@/components/ui/styles";
@@ -105,8 +106,15 @@ function FullPlayer() {
             >
               {/* Light ripples around the cover with the track's real spectrum. */}
               <SpectrumAura>
-                <div className="rounded-[28px] shadow-2xl shadow-[rgb(42_32_78/0.16)]">
+                <div className="relative rounded-[28px] shadow-2xl shadow-[rgb(42_32_78/0.16)]">
                   <Cover seed={track.id} mood={track.primaryMood} artwork={track.artwork} rounded="rounded-[28px]" label={`${track.title} cover`} />
+                  {/* A record-label sticker that turns while the track plays. */}
+                  <OrbitText
+                    text={`now playing · ${EMOTION_INFO[track.primaryMood].short} · now playing · ${EMOTION_INFO[track.primaryMood].short} · `}
+                    spinning={playing && !reduced}
+                    colour={`color-mix(in oklab, ${EMOTION_INFO[track.primaryMood].accent} 55%, #2a1f5c)`}
+                    className="absolute -right-3 -top-4 z-10 h-[80px] w-[80px]"
+                  />
                 </div>
               </SpectrumAura>
             </motion.div>
