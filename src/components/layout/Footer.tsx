@@ -17,7 +17,7 @@ export function Footer() {
           <p className="mt-4 text-xs leading-relaxed text-faint">
             Sonora is a music experience, not a medical or mental-health service. If you&rsquo;re struggling, please reach out to
             someone you trust or find a local helpline at{" "}
-            <a className="underline decoration-ink/30 underline-offset-2 hover:text-ink" href="https://findahelpline.com" target="_blank" rel="noreferrer">
+            <a className="tap relative underline decoration-ink/30 underline-offset-2 hover:text-ink" href="https://findahelpline.com" target="_blank" rel="noreferrer">
               findahelpline.com
             </a>
             .
@@ -26,14 +26,14 @@ export function Footer() {
         <nav aria-label="Footer" className="grid grid-cols-2 gap-8 text-sm md:col-span-2 md:grid-cols-2">
           <ul className="space-y-3">
             <li className="text-xs uppercase tracking-[0.16em] text-faint">Listen</li>
-            <li><Link className="text-muted hover:text-ink" href="/experience">Check in</Link></li>
-            <li><Link className="text-muted hover:text-ink" href="/discover">Discover</Link></li>
-            <li><Link className="text-muted hover:text-ink" href="/originals">Sonora Originals</Link></li>
+            <li><Link className="tap relative text-muted hover:text-ink" href="/experience">Check in</Link></li>
+            <li><Link className="tap relative text-muted hover:text-ink" href="/discover">Discover</Link></li>
+            <li><Link className="tap relative text-muted hover:text-ink" href="/originals">Sonora Originals</Link></li>
           </ul>
           <ul className="space-y-3">
             <li className="text-xs uppercase tracking-[0.16em] text-faint">You</li>
-            <li><Link className="text-muted hover:text-ink" href="/profile">Your library</Link></li>
-            <li><Link className="text-muted hover:text-ink" href="/privacy">Privacy &amp; your data</Link></li>
+            <li><Link className="tap relative text-muted hover:text-ink" href="/profile">Your library</Link></li>
+            <li><Link className="tap relative text-muted hover:text-ink" href="/privacy">Privacy &amp; your data</Link></li>
           </ul>
         </nav>
       </div>
