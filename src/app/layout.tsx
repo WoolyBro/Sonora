@@ -16,12 +16,12 @@ const display = Imbue({
   display: "swap",
 });
 
-// The italic accent word in headlines ("soundtrack.").
+// The italic accent word in headlines ("soundtrack."), and one roman section heading.
 const accent = Instrument_Serif({
   variable: "--font-accent",
   subsets: ["latin"],
   weight: "400",
-  style: "italic",
+  style: ["normal", "italic"],
   display: "swap",
 });
 

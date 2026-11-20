@@ -16,8 +16,9 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Fragment, useEffect, useRef, useState, type ElementType, type ReactNode, type RefObject } from "react";
 
-import { EMOTIONS, EMOTION_INFO } from "@/lib/emotion/taxonomy";
+import { EMOTIONS, EMOTION_INFO, type Emotion } from "@/lib/emotion/taxonomy";
 
+import { MOOD_TYPE, MOOD_TYPE_SCALE } from "./moodType";
 import { EASE_OUT } from "./Reveal";
 
 /* ------------------------------------------------------------------ */
@@ -63,6 +64,7 @@ export function useProximityWeight(ref: RefObject<HTMLElement | null>, { lift = 
     let letters: HTMLElement[] = [];
     let current = new Float32Array(0);
     let soft: number[] = [];
+    let keep: string[] = []; // each letter's other axes (wdth, opsz…), preserved while we change weight
     let baseWeight = 400;
     let sigma = 48;
 
@@ -70,9 +72,13 @@ export function useProximityWeight(ref: RefObject<HTMLElement | null>, { lift = 
       letters = Array.from(root.querySelectorAll<HTMLElement>("[data-prox]"));
       current = new Float32Array(letters.length);
       // Read each letter's own SOFT before we ever touch it (the italic "soundtrack." is already soft).
+      keep = [];
       soft = letters.map((l) => {
         l.style.fontVariationSettings = "";
-        const m = /"SOFT"\s+([\d.]+)/.exec(getComputedStyle(l).fontVariationSettings);
+        const fvs = getComputedStyle(l).fontVariationSettings;
+        const m = /"SOFT"\s+([\d.]+)/.exec(fvs);
+        const others = fvs === "normal" ? [] : fvs.split(",").map((x) => x.trim()).filter((x) => !/^"(wght|SOFT)"/.test(x));
+        keep.push(others.length ? `${others.join(", ")}, ` : "");
         return m ? Number(m[1]) : 0;
       });
       const cs = getComputedStyle(root);
@@ -100,7 +106,7 @@ export function useProximityWeight(ref: RefObject<HTMLElement | null>, { lift = 
         if (Math.abs(targets[i] - next) > 0.002) moving = true;
         current[i] = next;
         l.style.fontVariationSettings =
-          next < 0.004 ? "" : `"wght" ${Math.round(baseWeight + lift * next)}, "SOFT" ${Math.round(soft[i] + (100 - soft[i]) * next)}`;
+          next < 0.004 ? "" : `${keep[i]}"wght" ${Math.round(baseWeight + lift * next)}, "SOFT" ${Math.round(soft[i] + (100 - soft[i]) * next)}`;
       });
       if (moving) raf = requestAnimationFrame(frame);
     };
@@ -294,14 +300,14 @@ export function WaveText({ length = 32, seed = 1, className = "" }: { length?: n
 
 const inkFor = (accent: string, amount = 55) => `color-mix(in oklab, ${accent} ${amount}%, #2a1f5c)`;
 
-/** Feeling words in each mood's colour, interleaved so neighbours differ. */
+/** Feeling words in each mood's colour and typeface, interleaved so neighbours differ. */
 function tickerWords() {
-  const out: { word: string; colour: string }[] = [];
+  const out: { word: string; colour: string; mood: Emotion }[] = [];
   const longest = Math.max(...EMOTIONS.map((e) => EMOTION_INFO[e].examples.length));
   for (let k = 0; k < longest; k++) {
     for (const e of EMOTIONS) {
       const w = EMOTION_INFO[e].examples[k];
-      if (w) out.push({ word: w, colour: inkFor(EMOTION_INFO[e].accent) });
+      if (w) out.push({ word: w, colour: inkFor(EMOTION_INFO[e].accent), mood: e });
     }
   }
   return out;
@@ -377,9 +383,9 @@ export function FeelingsTicker({ className = "" }: { className?: string }) {
   }, []);
 
   const run = (rep: number) =>
-    words.map(({ word, colour }, i) => (
+    words.map(({ word, colour, mood }, i) => (
       <Fragment key={`${rep}-${i}`}>
-        <tspan style={{ fill: colour }} dx={rep === 0 && i === 0 ? 0 : 24}>
+        <tspan style={{ ...MOOD_TYPE[mood], fill: colour, fontSize: 46 * MOOD_TYPE_SCALE[mood] }} dx={rep === 0 && i === 0 ? 0 : 24}>
           {word}
         </tspan>
         <tspan style={{ fill: "var(--warm)" }} dx="24" fontSize="26" fontStyle="normal">
@@ -472,8 +478,12 @@ export function MoodReel({ className = "" }: { className?: string }) {
                 tabIndex={Math.abs(off) > 1 ? -1 : 0} // the faded edges of the dial stay clickable, not tab stops
                 aria-pressed={on}
                 onClick={() => setActive(i)}
-                className="font-display flex h-full items-center gap-3 whitespace-nowrap text-[clamp(1.6rem,5.6vw,2.2rem)] leading-none transition-colors duration-500 focus-visible:outline-none focus-visible:underline"
-                style={{ color: on ? inkFor(eInfo.accent, 62) : "var(--text-muted)" }}
+                className="flex h-full items-center gap-3 whitespace-nowrap leading-none transition-colors duration-500 focus-visible:outline-none focus-visible:underline"
+                style={{
+                  ...MOOD_TYPE[e],
+                  fontSize: `calc(clamp(1.6rem, 5.6vw, 2.2rem) * ${MOOD_TYPE_SCALE[e]})`,
+                  color: on ? inkFor(eInfo.accent, 62) : "var(--text-muted)",
+                }}
               >
                 <motion.span
                   aria-hidden="true"

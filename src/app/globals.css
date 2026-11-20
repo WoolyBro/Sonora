@@ -170,6 +170,22 @@ body {
   letter-spacing: -0.015em;
 }
 
+/* Section headings don't all share one voice. */
+/* A tight, poster-like grotesque: Bricolage at its narrowest, largest optical size. */
+.font-grotesk-tight {
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+  font-variation-settings: "wdth" 75, "opsz" 96;
+  letter-spacing: -0.035em;
+}
+/* Instrument Serif upright: soft, editorial. */
+.font-serif-roman {
+  font-family: var(--font-accent), ui-serif, Georgia, serif;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
 /* Wavefont: every character is a bar, so text reads as a waveform. Decorative. */
 .font-wave {
   font-family: var(--font-wave), monospace;
