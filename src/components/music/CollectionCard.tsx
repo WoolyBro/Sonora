@@ -8,30 +8,32 @@ import { collectionTracks, type Collection } from "@/lib/catalog";
 
 import { Cover } from "./Cover";
 
-export function CollectionCard({ collection, size = "md" }: { collection: Collection; size?: "md" | "lg" }) {
+/**
+ * Shelf card: square art, title and a two-line description, on a panel that
+ * lights up on hover while a round play button rises into the art's corner.
+ */
+export function CollectionCard({ collection }: { collection: Collection; size?: "md" | "lg" }) {
   const player = usePlayer();
   const tracks = collectionTracks(collection);
   return (
-    <article className="group relative">
-      <Link href={`/collections/${collection.id}`} className="block rounded-3xl focus-visible:outline-offset-4">
-        <div className="relative overflow-hidden rounded-3xl">
-          <Cover seed={collection.id} palette={collection.palette} rounded="rounded-3xl" className="transition duration-700 ease-[var(--ease-soft)] group-hover:scale-[1.03]" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
-            <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/60">{tracks.length} tracks</p>
-            <h3 className={`font-display mt-1 text-white ${size === "lg" ? "text-3xl" : "text-2xl"}`}>{collection.title}</h3>
-          </div>
-        </div>
-        <p className="mt-3 line-clamp-2 text-sm text-muted">{collection.description}</p>
+    <article className="group relative h-full rounded-lg p-3 transition-colors duration-300 hover:bg-white/[0.07] focus-within:bg-white/[0.07]">
+      <div className="relative overflow-hidden rounded-md shadow-[0_10px_30px_-10px_rgb(0_0_0/0.6)]">
+        <Link href={`/collections/${collection.id}`} tabIndex={-1} aria-hidden="true">
+          <Cover seed={collection.id} palette={collection.palette} rounded="rounded-md" />
+        </Link>
+        <button
+          type="button"
+          onClick={() => player.playTracks(tracks, 0, collection.title)}
+          aria-label={`Play ${collection.title}`}
+          className="play-fab absolute bottom-2 right-2 h-12 w-12 md:translate-y-2 md:opacity-0 md:group-focus-within:translate-y-0 md:group-focus-within:opacity-100 md:group-hover:translate-y-0 md:group-hover:opacity-100"
+        >
+          <Play size={20} fill="currentColor" className="ml-0.5" />
+        </button>
+      </div>
+      <Link href={`/collections/${collection.id}`} className="mt-3 block rounded-sm focus-visible:outline-offset-2">
+        <h3 className="truncate text-[15px] font-semibold">{collection.title}</h3>
+        <p className="mt-1 line-clamp-2 text-[13px] leading-snug text-muted">{collection.description || `${tracks.length} tracks`}</p>
       </Link>
-      <button
-        type="button"
-        onClick={() => player.playTracks(tracks, 0, collection.title)}
-        aria-label={`Play ${collection.title}`}
-        className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-ink text-bg shadow-xl shadow-[rgb(42_32_78/0.16)] transition md:opacity-0 md:group-focus-within:opacity-100 md:group-hover:opacity-100"
-      >
-        <Play size={18} fill="currentColor" className="ml-0.5" />
-      </button>
     </article>
   );
 }

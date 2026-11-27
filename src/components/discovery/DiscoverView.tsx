@@ -1,17 +1,17 @@
 "use client";
 
-import { Search, X } from "lucide-react";
-import { useDeferredValue, useMemo, useState } from "react";
+import { Play, Search, X } from "lucide-react";
+import Link from "next/link";
+import { useDeferredValue, useMemo, useRef, useState, type ReactNode } from "react";
 
 import { MoodOrb } from "@/components/emotion/MoodPicker";
 import { Stagger, StaggerItem } from "@/components/motion/Reveal";
-import { TiltCard } from "@/components/motion/TiltCard";
-import { Doodle } from "@/components/ui/Doodle";
 import { CollectionCard } from "@/components/music/CollectionCard";
-import { TrackRow } from "@/components/music/TrackItems";
+import { Cover } from "@/components/music/Cover";
+import { TrackCard, TrackRow } from "@/components/music/TrackItems";
 import { usePlayer } from "@/components/player/PlayerProvider";
 import { btn, chipState, cn } from "@/components/ui/styles";
-import { catalog, GENRES } from "@/lib/catalog";
+import { catalog, collectionTracks, GENRES } from "@/lib/catalog";
 import { EMOTIONS, EMOTION_INFO, type Emotion } from "@/lib/emotion/taxonomy";
 import { filterTracks, type EnergyBand, type TrackFilters } from "@/lib/search";
 
@@ -25,6 +25,25 @@ const ENERGY: { value: EnergyBand; label: string }[] = [
 const selectCls =
   "rounded-full bg-ink/[0.04] px-4 py-2 text-sm text-ink ring-1 ring-hairline focus:outline-none focus-visible:ring-[var(--atmo-accent)] [&>option]:bg-raised";
 
+/** A shelf heading with an optional "Show all" link, as on a music app's home. */
+function Shelf({ id, title, href, children }: { id: string; title: string; href?: string; children: ReactNode }) {
+  return (
+    <section aria-labelledby={id} className="mt-10">
+      <div className="mb-2 flex items-end justify-between gap-4 px-1">
+        <h2 id={id} className="text-2xl font-bold tracking-[-0.02em]">
+          {title}
+        </h2>
+        {href && (
+          <Link href={href} className="tap relative text-[13px] font-semibold text-muted hover:text-ink hover:underline">
+            Show all
+          </Link>
+        )}
+      </div>
+      {children}
+    </section>
+  );
+}
+
 export function DiscoverView() {
   const player = usePlayer();
   const [query, setQuery] = useState("");
@@ -34,6 +53,8 @@ export function DiscoverView() {
   const [genre, setGenre] = useState("");
   const [collection, setCollection] = useState("");
   const deferredQuery = useDeferredValue(query);
+  const searchRef = useRef<HTMLElement>(null);
+  const originals = useMemo(() => catalog.tracks.filter((t) => t.isOriginal && t.artwork), []);
 
   const filters: TrackFilters = { query: deferredQuery, moods, energy, vocals, genre: genre || undefined, collection: collection || undefined };
   const results = useMemo(() => filterTracks(catalog.tracks, filters), [deferredQuery, moods, energy, vocals, genre, collection]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -49,28 +70,79 @@ export function DiscoverView() {
   };
 
   return (
-    <div className="mx-auto max-w-[1400px] px-4 pt-6 sm:px-6 md:pt-12">
-      <p className="text-xs font-medium uppercase tracking-[0.28em] text-muted">Discover</p>
-      <h1 className="font-display relative mt-4 inline-block text-[clamp(2.4rem,6vw,4.5rem)] leading-[1.02]">
-        Find a sound for any state.
-        <Doodle name="star" delay={0.5} float tilt={14} className="absolute -right-10 -top-3 hidden h-8 w-8 text-[var(--warm)] sm:block" />
-      </h1>
+    <div className="px-4 pb-4 sm:px-6">
+      <h1 className="font-headline pt-2 text-[clamp(2.4rem,5vw,3.6rem)] leading-none">Find a sound for any state</h1>
 
-      <section aria-label="Collections" className="mt-12">
-        <Stagger stagger={0.07} className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
+      {/* Quick tiles: jump straight into a collection */}
+      <Stagger stagger={0.04} className="mt-6 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
+        {catalog.collections.slice(0, 8).map((c) => (
+          <StaggerItem key={c.id}>
+            <div className="group relative flex h-16 items-center overflow-hidden rounded-md bg-white/[0.08] transition-colors hover:bg-white/[0.16]">
+              <Link href={`/collections/${c.id}`} className="flex h-full min-w-0 flex-1 items-center gap-3 pr-16">
+                <span className="h-16 w-16 shrink-0 shadow-[4px_0_14px_-4px_rgb(0_0_0/0.5)]">
+                  <Cover seed={c.id} palette={c.palette} rounded="rounded-none" />
+                </span>
+                <span className="truncate text-[15px] font-semibold">{c.title}</span>
+              </Link>
+              <button
+                type="button"
+                aria-label={`Play ${c.title}`}
+                onClick={() => player.playTracks(collectionTracks(c), 0, c.title)}
+                className="play-fab absolute right-3 h-10 w-10 md:opacity-0 md:group-focus-within:opacity-100 md:group-hover:opacity-100"
+              >
+                <Play size={16} fill="currentColor" className="ml-0.5" />
+              </button>
+            </div>
+          </StaggerItem>
+        ))}
+      </Stagger>
+
+      <Shelf id="shelf-collections" title="Collections for every state">
+        <div className="-mx-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5">
           {catalog.collections.map((c) => (
-            <StaggerItem key={c.id}>
-              <TiltCard>
-                <CollectionCard collection={c} />
-              </TiltCard>
-            </StaggerItem>
+            <CollectionCard key={c.id} collection={c} />
           ))}
-        </Stagger>
-      </section>
+        </div>
+      </Shelf>
 
-      <section aria-labelledby="search-heading" className="mt-20">
+      {originals.length > 0 && (
+        <Shelf id="shelf-originals" title="Sonora Originals" href="/originals">
+          <div className="no-scrollbar -mx-4 flex snap-x gap-4 overflow-x-auto px-4 pb-2 sm:-mx-1 sm:px-1">
+            {originals.slice(0, 12).map((t, i) => (
+              <TrackCard key={t.id} track={t} onPlay={() => player.playTracks(originals, i, "Sonora Originals")} />
+            ))}
+          </div>
+        </Shelf>
+      )}
+
+      <Shelf id="shelf-moods" title="Browse by mood">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          {EMOTIONS.map((m) => {
+            const info = EMOTION_INFO[m];
+            return (
+              <button
+                key={m}
+                type="button"
+                onClick={() => {
+                  setMoods([m]);
+                  searchRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
+                className="group relative aspect-[16/10] overflow-hidden rounded-lg p-4 text-left text-white transition-transform hover:scale-[1.02]"
+                style={{ background: `linear-gradient(135deg, ${info.palette[0]}, ${info.palette[2]})` }}
+              >
+                <span className="relative z-10 block max-w-[70%] text-lg font-bold leading-tight sm:text-xl">{info.label}</span>
+                <span className="absolute -bottom-2 -right-4 w-[42%] rotate-[25deg] shadow-[0_6px_20px_rgb(0_0_0/0.45)] transition-transform duration-500 group-hover:rotate-[18deg]">
+                  <Cover seed={`mood-${m}`} mood={m} rounded="rounded-md" />
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </Shelf>
+
+      <section ref={searchRef} aria-labelledby="search-heading" className="mt-14 scroll-mt-4">
         <div className="flex flex-wrap items-end justify-between gap-4">
-          <h2 id="search-heading" className="font-display text-3xl sm:text-4xl">Search the library</h2>
+          <h2 id="search-heading" className="text-2xl font-bold tracking-[-0.02em]">Search the library</h2>
           {active && (
             <button type="button" onClick={reset} className={btn.ghost}>
               <X size={15} /> Clear filters

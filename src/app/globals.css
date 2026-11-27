@@ -521,3 +521,53 @@ body {
 :root:has([data-landing]) footer {
   margin-top: 0;
 }
+
+/* ───────────────── Music app shell (Discover, collections, Originals, Library) ─────────────────
+   A dark listening room: the tokens flip to night so every component that
+   reads them (cards, rows, the player, the mobile nav) follows. */
+:root:has([data-app-shell]) {
+  --bg: #0b0a0d;
+  --bg-raised: #1c1922;
+  --panel: #15121a;
+  --surface: rgb(255 255 255 / 0.05);
+  --surface-strong: rgb(255 255 255 / 0.09);
+  --hairline: rgb(255 255 255 / 0.1);
+  --text: #f6f3f8;
+  --text-muted: #bab3c1;
+  --text-faint: #9a93a3;
+  --accent: #b9abff;
+  --accent-strong: #cdc3ff;
+  --danger: #ff7a84;
+  --atmo-ink: color-mix(in oklab, var(--atmo-accent) 72%, white);
+  color-scheme: dark;
+}
+:root:has([data-app-shell]) [data-site-header],
+:root:has([data-app-shell]) [data-site-footer],
+:root:has([data-app-shell]) [data-atmo],
+:root:has([data-app-shell]) .grain::after {
+  display: none;
+}
+
+/* The round play button: Sonora's lavender-to-peach mark colours, dark icon. */
+.play-fab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #cfc6ff 0%, #f2a97f 100%);
+  color: #120f16;
+  box-shadow: 0 8px 22px -6px rgb(0 0 0 / 0.55);
+  transition: transform 0.2s var(--ease-soft), filter 0.2s, opacity 0.25s, translate 0.25s var(--ease-soft);
+}
+.play-fab:hover {
+  transform: scale(1.06);
+  filter: brightness(1.05);
+}
+.play-fab:active {
+  transform: scale(0.97);
+}
+
+/* Mood-tinted wash at the top of the main panel, fading into it. */
+.panel-wash {
+  background: linear-gradient(180deg, color-mix(in oklab, var(--wash, var(--atmo-accent)) 46%, var(--panel)) 0%, var(--panel) 100%);
+}

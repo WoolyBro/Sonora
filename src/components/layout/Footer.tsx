@@ -11,7 +11,7 @@ const LINKS = [
 /** Printed-poster footer: yellow stock, a halftone strip and a giant wordmark. */
 export function Footer() {
   return (
-    <footer className="relative z-10 mt-24 overflow-hidden bg-[#fff546] pb-[calc(var(--nav-h)+var(--player-h))] text-[#3d3b08]">
+    <footer data-site-footer="" className="relative z-10 mt-24 overflow-hidden bg-[#fff546] pb-[calc(var(--nav-h)+var(--player-h))] text-[#3d3b08]">
       <div className="mx-auto max-w-[1400px] px-4 pt-6 sm:px-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <nav aria-label="Footer">

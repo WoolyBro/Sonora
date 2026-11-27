@@ -58,7 +58,7 @@ export function TrackCard({ track, reason, onPlay }: { track: Track; reason?: st
           onClick={() => (isCurrent ? player.toggle() : onPlay())}
           aria-label={isPlaying ? `Pause ${track.title}` : `Play ${track.title}`}
           className={cn(
-            "absolute bottom-2.5 right-2.5 flex h-11 w-11 items-center justify-center rounded-full bg-ink text-bg shadow-xl shadow-[rgb(42_32_78/0.16)] transition",
+            "play-fab absolute bottom-2.5 right-2.5 h-11 w-11",
             isCurrent ? "opacity-100" : "opacity-100 md:translate-y-1 md:opacity-0 md:group-focus-within:translate-y-0 md:group-focus-within:opacity-100 md:group-hover:translate-y-0 md:group-hover:opacity-100",
           )}
         >

@@ -23,7 +23,7 @@ function isActive(pathname: string, href: string) {
 export function SiteHeader() {
   const pathname = usePathname();
   return (
-    <header className="sticky top-0 z-30">
+    <header data-site-header="" className="sticky top-0 z-30">
       {/* soft frosted band that fades out downwards, so the page shows through */}
       <div
         aria-hidden="true"
