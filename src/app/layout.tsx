@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, Caveat, Imbue, Instrument_Serif, Wavefont } from "next/font/google";
+import { Bricolage_Grotesque, Caveat, Geist_Mono, Imbue, Instrument_Serif, Source_Serif_4, Wavefont } from "next/font/google";
 
 import { Footer } from "@/components/layout/Footer";
 import { Providers } from "@/components/layout/Providers";
@@ -30,6 +30,21 @@ const body = Bricolage_Grotesque({
   variable: "--font-body",
   subsets: ["latin"],
   axes: ["opsz", "wdth"],
+  display: "swap",
+});
+
+// Editorial serif for headline first lines and longer copy on the landing page.
+const serif = Source_Serif_4({
+  variable: "--font-source-serif",
+  subsets: ["latin"],
+  axes: ["opsz"],
+  display: "swap",
+});
+
+// Labels, data and the square landing-page buttons.
+const mono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
   display: "swap",
 });
 
@@ -69,7 +84,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${display.variable} ${accent.variable} ${body.variable} ${wave.variable} ${hand.variable} antialiased`}>
+    <html lang="en" className={`${display.variable} ${accent.variable} ${body.variable} ${serif.variable} ${mono.variable} ${wave.variable} ${hand.variable} antialiased`}>
       <body className="grain min-h-dvh">
         <Providers>
           <div className="relative z-10 flex min-h-dvh flex-col">

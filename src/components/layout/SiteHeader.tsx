@@ -1,6 +1,6 @@
 "use client";
 
-import { Compass, Disc3, House, Sparkles, User } from "lucide-react";
+import { ArrowRight, Compass, Disc3, House, Sparkles, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -23,36 +23,39 @@ function isActive(pathname: string, href: string) {
 export function SiteHeader() {
   const pathname = usePathname();
   return (
-    <header className="relative z-30">
+    <header className="sticky top-0 z-30">
+      {/* soft frosted band that fades out downwards, so the page shows through */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 -bottom-4 bg-[color-mix(in_oklab,var(--bg)_45%,transparent)] backdrop-blur-md [mask-image:linear-gradient(to_bottom,black_55%,transparent)]"
+      />
       <a href="#main" className="sr-only rounded-full bg-ink px-4 py-2 text-bg focus:not-sr-only focus:absolute focus:left-4 focus:top-4">
         Skip to content
       </a>
-      <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-4 sm:px-6 md:h-20">
-        <Link href="/" className="tap relative flex items-center gap-2.5 rounded-xl" aria-label="Sonora home">
-          <BrandMark />
-          <span className="font-display text-[22px] tracking-tight">Sonora</span>
+      <div className="relative mx-auto flex h-16 max-w-[1400px] items-center justify-between px-4 sm:px-6 md:h-[72px]">
+        <Link href="/" className="tap relative flex items-center gap-2" aria-label="Sonora home">
+          <BrandMark className="h-6 w-6" />
+          <span className="font-headline text-[24px] leading-none">Sonora</span>
         </Link>
-        <nav aria-label="Main" className="hidden items-center gap-1 rounded-full bg-ink/[0.03] p-1 ring-1 ring-hairline md:flex">
+        <nav aria-label="Main" className="hidden items-center gap-7 md:flex">
           {NAV.filter((n) => !("mobileOnly" in n)).map((n) => (
             <Link
               key={n.href}
               href={n.href}
               aria-current={isActive(pathname, n.href) ? "page" : undefined}
               className={cn(
-                "rounded-full px-4 py-2 text-sm transition",
-                isActive(pathname, n.href) ? "bg-ink/10 text-ink" : "text-muted hover:text-ink",
+                "tap relative text-[15px] font-medium transition",
+                isActive(pathname, n.href) ? "text-ink underline decoration-2 underline-offset-[6px]" : "text-ink/75 hover:text-ink",
               )}
             >
               {n.label}
             </Link>
           ))}
+          <Link href="/experience" className="tap group relative inline-flex items-center gap-1 text-[15px] font-semibold text-ink">
+            Discover your sound
+            <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-0.5" />
+          </Link>
         </nav>
-        <Link
-          href="/experience"
-          className="hidden rounded-full bg-ink px-4 py-2 text-sm font-semibold text-bg transition hover:bg-ink/85 md:inline-flex"
-        >
-          Discover your sound
-        </Link>
       </div>
     </header>
   );

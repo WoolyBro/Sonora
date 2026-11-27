@@ -128,6 +128,8 @@
   --font-hand: var(--font-hand);
   --font-accent: var(--font-accent);
   --font-wave: var(--font-wave);
+  --font-serif: var(--font-source-serif);
+  --font-mono: var(--font-geist-mono);
   --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -396,3 +398,126 @@ body {
   75% { transform: rotate(calc(var(--tilt, 0deg) + 9deg)) scale(1.08); }
 }
 .doodle:hover, .group:hover .doodle-on-group { animation: doodle-wiggle 0.6s ease-in-out; }
+
+/* ───────────────── Landing page: editorial, print-inspired ───────────────── */
+
+/* The landing page is clean paper: no drifting colour blobs or dot landscape. */
+:root:has([data-landing]) [data-atmo] {
+  display: none;
+}
+
+/* Hero sky: clear blue at the top, warming to paper at the horizon. */
+.sky {
+  background: linear-gradient(180deg, #a9d2ff 0%, #c4dff8 34%, #e6e9ef 62%, #fbeedb 86%, var(--bg) 100%);
+}
+
+/* Tight headline grotesque (second line of each headline). */
+.font-headline {
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  font-variation-settings: "opsz" 96;
+  letter-spacing: -0.045em;
+}
+
+/* Square, monospaced, black: the landing page's buttons. */
+.btn-mono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 44px;
+  padding: 0.7rem 1rem;
+  background: #121015;
+  color: #fff;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.9rem;
+  letter-spacing: -0.01em;
+  transition: background-color 0.2s, transform 0.2s;
+}
+.btn-mono::before {
+  content: "";
+  width: 0.38em;
+  height: 0.38em;
+  background: currentColor;
+  transition: transform 0.3s var(--ease-soft);
+}
+.btn-mono:hover {
+  background: #2d2733;
+}
+.btn-mono:hover::before {
+  transform: rotate(45deg) scale(1.25);
+}
+.btn-mono:active {
+  transform: scale(0.98);
+}
+
+/* Halftone duotone: a greyscale photo screened onto a flat ink colour, with a
+   printed dot screen on top. --ht-ink is the colour the darks become. */
+.halftone {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--ht-ink, #2f80ed);
+}
+.halftone img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.35) brightness(1.08);
+  mix-blend-mode: screen;
+}
+.halftone::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle at center, var(--ht-dot, rgb(255 255 255 / 0.55)) 0.9px, transparent 1.3px);
+  background-size: 4px 4px;
+  mix-blend-mode: overlay;
+}
+/* Yellow print: lights stay yellow, darks go olive. */
+.halftone--yellow {
+  background: #fff546;
+}
+.halftone--yellow img {
+  mix-blend-mode: multiply;
+  opacity: 0.7;
+  filter: grayscale(1) contrast(1.6) brightness(1.15) sepia(0.6) hue-rotate(10deg);
+}
+.halftone--yellow::after {
+  --ht-dot: rgb(102 100 15 / 0.3);
+  mix-blend-mode: multiply;
+}
+
+/* Warm paper with a faint woven line texture. */
+.paper-texture {
+  background-color: #efe5d3;
+  background-image:
+    repeating-linear-gradient(115deg, rgb(255 255 255 / 0.28) 0 2px, transparent 2px 9px),
+    repeating-linear-gradient(25deg, rgb(120 96 60 / 0.06) 0 1px, transparent 1px 7px);
+}
+
+/* Thin vertical bars of the preview chart grow in, in sequence. */
+@keyframes bar-rise {
+  from {
+    transform: scaleY(0);
+  }
+}
+.bar-rise {
+  transform-origin: bottom;
+  animation: bar-rise 0.9s var(--ease-soft) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .bar-rise {
+    animation: none;
+  }
+}
+
+/* The landing page's closing band sits flush on the footer. */
+:root:has([data-landing]) .page-pad {
+  padding-bottom: 0;
+}
+:root:has([data-landing]) footer {
+  margin-top: 0;
+}

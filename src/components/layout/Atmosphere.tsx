@@ -37,14 +37,16 @@ export function AtmosphereProvider({ children }: { children: ReactNode }) {
   return (
     <AtmosphereContext.Provider value={setExplicit}>
       {/* Grainy pastel gradient (grain is the body's .grain layer) that follows the mood… */}
-      <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+      <div aria-hidden="true" data-atmo="" className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         <div className="atmo-blob atmo-blob--1" />
         <div className="atmo-blob atmo-blob--2" />
         <div className="atmo-blob atmo-blob--3" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,transparent_0%,color-mix(in_oklab,var(--bg)_55%,transparent)_80%)]" />
       </div>
       {/* …with the dotted landscape and the pointer's light on top. */}
-      <DotField />
+      <div data-atmo="">
+        <DotField />
+      </div>
       {children}
     </AtmosphereContext.Provider>
   );

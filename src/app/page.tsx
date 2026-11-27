@@ -1,177 +1,256 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowUpRight, Asterisk, LockKeyhole, Orbit } from "lucide-react";
 import Link from "next/link";
 
-import { FeaturedCollections } from "@/components/landing/FeaturedCollections";
-import { MoodOrbit } from "@/components/landing/MoodOrbit";
-import { WaveField } from "@/components/landing/WaveField";
-import { FeelingsTicker, MoodReel, ProximityGroup, ProxWords, WaveText } from "@/components/motion/Kinetic";
+import { AppPreview } from "@/components/landing/AppPreview";
+import { RoomsStamp } from "@/components/landing/RoomsStamp";
+import { FeelingsTicker, ProximityGroup, ProxWords } from "@/components/motion/Kinetic";
 import { Reveal, SplitWords, Stagger, StaggerItem } from "@/components/motion/Reveal";
-import { Doodle, HandNote, type DoodleName } from "@/components/ui/Doodle";
-import { btn } from "@/components/ui/styles";
-import { catalog } from "@/lib/catalog";
+import { Cover } from "@/components/music/Cover";
+import { catalog, collectionTracks } from "@/lib/catalog";
 
-const STEPS: { doodle: DoodleName; colour: string; title: string; body: string }[] = [
+const STEPS = [
+  { title: "Write", body: "Say how you feel in your own words. A sentence is plenty." },
+  { title: "Read", body: "Sonora’s own model reads eight feelings, and how strongly each comes through, on your device." },
+  { title: "Match", body: "Every track is tagged by mood, energy and feel, so the match is about texture, not genre." },
+  { title: "Listen", body: "Stay with the feeling, ease it gently, or go somewhere new. You choose the direction." },
+];
+
+const PRINCIPLES = [
   {
-    doodle: "pencil",
-    colour: "text-[var(--atmo-ink)]",
-    title: "Say it your way",
-    body: "Write how you feel in your own words. A sentence is plenty. There's no wrong way to put it.",
+    icon: LockKeyhole,
+    title: "Your words stay yours",
+    body: "Read by Sonora’s own model inside your browser. What you write is never sent to a server or stored.",
   },
   {
-    doodle: "eye",
-    colour: "text-[#c25a3a]",
-    title: "See how it reads",
-    body: "Sonora estimates the feelings in your words and how strongly they come through. Adjust anything that's off.",
+    icon: Orbit,
+    title: "Eight feelings, not two",
+    body: "Low, anxious, angry, stressed, numb, joyful, warm and calm, with how strongly each one comes through.",
   },
   {
-    doodle: "headphones",
-    colour: "text-[#2f7a6b]",
-    title: "Choose a direction",
-    body: "Music that meets your mood, gently shifts it, or takes you somewhere new. You decide where to go.",
+    icon: ArrowUpRight,
+    title: "Meet it, or move it",
+    body: "Music that matches where you are, or eases you somewhere gentler. Never a diagnosis, just a soundtrack.",
   },
 ];
 
+/** Two-line editorial headline: a serif line over a tight grotesque line. */
+function Headline({ id, serif, bold, className = "" }: { id?: string; serif: string; bold: string; className?: string }) {
+  return (
+    <ProximityGroup as="h2" id={id} className={`text-[clamp(2.2rem,5vw,3.6rem)] leading-[1.02] ${className}`}>
+      <span className="font-serif block font-normal tracking-[-0.02em]">
+        <ProxWords text={serif} />
+      </span>
+      <span className="font-headline block">
+        <ProxWords text={bold} />
+      </span>
+    </ProximityGroup>
+  );
+}
+
 export default function Home() {
-  const featured = catalog.collections.slice(0, 4);
+  const rooms = catalog.collections.slice(0, 4);
   return (
     <>
-      {/* Hero */}
-      <section data-landing="" className="relative isolate overflow-hidden">
-        <WaveField className="absolute inset-x-0 top-[8%] -z-10 h-[78%] w-full opacity-90" />
-        <MoodOrbit className="pointer-events-auto absolute right-[-3%] top-1/2 -z-10 hidden aspect-square w-[min(40vw,580px)] -translate-y-[46%] lg:block xl:right-[4%]" />
-        <div className="mx-auto flex min-h-[calc(100dvh-5rem)] max-w-[1400px] flex-col justify-center px-4 pb-24 pt-10 sm:px-6 md:min-h-[78dvh]">
-          <Reveal y={10} as="header" className="mb-6">
-            <p className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.28em] text-muted">
-              <WaveText length={18} seed={2} className="text-[22px] text-[var(--atmo-ink)]" />
-              Feel · Write · Listen
-            </p>
-          </Reveal>
-          <ProximityGroup as="h1" className="font-display relative max-w-4xl text-[clamp(3.6rem,11vw,9.5rem)] leading-[0.9]">
-            <SplitWords text="Your emotions have a" delay={0.1} letters />{" "}
-            <em className="font-accent relative inline-block pr-[0.06em]">
-              <SplitWords text="soundtrack." delay={0.45} wordClassName="text-sheen" letters />
-              {/* scribbled underline, drawn after the word lands */}
-              <Doodle name="underline" delay={1.1} strokeWidth={3} className="absolute -bottom-[0.18em] left-0 h-[0.3em] w-full text-[var(--warm)]" />
-            </em>
-            <Doodle name="sparkle" delay={1.4} float tilt={-8} className="absolute -top-6 left-[min(58vw,640px)] hidden h-10 w-10 text-[var(--warm)] sm:block" />
-            <Doodle name="star" delay={1.6} float tilt={12} className="absolute -top-1 left-[min(64vw,700px)] hidden h-5 w-5 text-[var(--atmo-ink)] sm:block" />
+      {/* Hero: sky gradient that runs up behind the header */}
+      <section data-landing="" className="sky relative -mt-16 overflow-hidden pt-16 md:-mt-[72px] md:pt-[72px]">
+        <div className="mx-auto max-w-[1400px] px-4 pt-14 text-center sm:px-6 sm:pt-20">
+          <ProximityGroup as="h1" className="mx-auto max-w-5xl text-[clamp(2.9rem,8.4vw,6.6rem)] leading-[0.98]">
+            <span className="font-serif block font-normal tracking-[-0.025em]">
+              <SplitWords text="Your feelings," delay={0.05} letters />
+            </span>
+            <span className="font-headline block">
+              <SplitWords text="have a soundtrack" delay={0.3} letters />
+            </span>
           </ProximityGroup>
-          <Reveal delay={0.75} y={16}>
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted sm:text-xl">
-              Tell us what&rsquo;s on your mind. Discover music that meets you where you are.
+          <Reveal delay={0.6} y={12}>
+            <p className="font-serif mx-auto mt-6 max-w-2xl text-lg leading-snug text-ink/85 sm:text-[1.4rem]">
+              Tell Sonora how you feel in your own words. It finds music that meets you where you are.
             </p>
           </Reveal>
-          <Reveal delay={0.95} y={16} className="relative mt-10 flex flex-wrap gap-3">
-            <Link href="/experience" className={`${btn.primary} px-6 py-3 text-base`}>
-              Discover your sound <ArrowRight size={18} />
+          <Reveal delay={0.75} y={12} className="mt-9 flex flex-wrap justify-center gap-3 sm:gap-4">
+            <Link href="/experience" className="btn-mono">
+              Discover your sound
             </Link>
-            <Link href="/discover" className={`${btn.secondary} px-6 py-3 text-base`}>
+            <Link href="/discover" className="btn-mono">
               Explore music
             </Link>
-            {/* margin note: "one sentence is enough", with an arrow up to the button */}
-            <span className="pointer-events-none absolute left-6 top-full mt-3 hidden items-start gap-1 sm:flex">
-              <Doodle name="arrow" delay={1.5} className="h-12 w-16 -scale-y-100 text-[var(--atmo-ink)]" />
-              <HandNote className="mt-7 text-2xl">one sentence is enough</HandNote>
-            </span>
+          </Reveal>
+          <Reveal delay={0.9} y={40} className="mx-auto mt-14 max-w-[820px] text-left sm:mt-16">
+            <AppPreview />
           </Reveal>
         </div>
       </section>
 
       {/* Feeling words drifting on a wave */}
-      <Reveal y={0} className="-mt-10 mb-16 sm:-mt-6 sm:mb-24">
+      <Reveal y={0} className="my-14 sm:my-20">
         <FeelingsTicker />
       </Reveal>
 
       {/* How it works */}
-      <section aria-labelledby="how" className="mx-auto max-w-[1400px] px-4 sm:px-6">
-        <div className="grid gap-12 md:grid-cols-[0.8fr_1.2fr] md:gap-16">
-          <Reveal>
-            <ProximityGroup as="h2" id="how" className="font-grotesk-tight relative text-5xl leading-[0.98] sm:text-6xl">
-              <ProxWords text="From a feeling to a sound in" />{" "}
-              <span className="relative inline-block">
-                <ProxWords text="three" />
-                <Doodle name="loop" delay={0.4} strokeWidth={2.6} className="absolute -bottom-4 left-1/2 h-6 w-[130%] -translate-x-1/2 text-[var(--warm)]" />
-              </span>{" "}
-              <ProxWords text="steps." />
-            </ProximityGroup>
-            <p className="mt-9 max-w-md text-muted">
-              Sonora reads the emotional texture of what you write across eight states, then matches it against the mood, energy and
-              feel of every track in the library.
-            </p>
-            <MoodReel className="mt-8" />
+      <section aria-labelledby="how" className="mx-auto max-w-[1180px] px-4 sm:px-6">
+        <Reveal className="text-center">
+          <ProximityGroup as="h2" id="how" className="font-headline mx-auto max-w-2xl text-[clamp(1.9rem,3.6vw,2.6rem)] leading-[1.08]">
+            <ProxWords text="Everything you need to hear how you feel" />
+          </ProximityGroup>
+        </Reveal>
+
+        <Reveal y={24} className="relative mt-10 overflow-hidden sm:mt-12">
+          <div className="relative h-[360px] sm:h-[460px]">
+            {/* eslint-disable-next-line @next/next/no-img-element -- local artwork */}
+            <img src="/artwork/mine-lightness-returns.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,#a9d2ff,#fbe3c4)] opacity-80 mix-blend-multiply" />
+            <div className="absolute inset-0 bg-white/15" />
+            <div className="absolute left-1/2 top-1/2 w-[min(86%,640px)] -translate-x-1/2 -translate-y-1/2 bg-white p-4 shadow-[0_24px_60px_-24px_rgb(0_0_0/0.4)] sm:p-5">
+              <div className="flex items-start justify-between">
+                <p className="font-mono text-sm sm:text-base">Feelings Sonora can read</p>
+                <Asterisk size={44} strokeWidth={1} aria-hidden="true" className="-mr-1 -mt-1" />
+              </div>
+              <div className="mt-10 flex items-end justify-between sm:mt-16">
+                <p className="font-headline text-6xl leading-none sm:text-7xl">
+                  8 <span className="font-mono text-base font-normal tracking-normal text-ink/50">moods</span>
+                </p>
+                <p className="font-mono text-sm text-[#1f6fd6] sm:text-base">on your device</p>
+              </div>
+            </div>
+          </div>
+        </Reveal>
+
+        <Stagger as="ol" stagger={0.08} className="mt-4">
+          {STEPS.map((s, i) => (
+            <StaggerItem as="li" key={s.title} className="group border-b border-ink/12 py-5">
+              <div className="flex items-baseline justify-between gap-4">
+                <h3 className="text-lg font-semibold transition-transform duration-500 group-hover:translate-x-1">{s.title}</h3>
+                <span className="font-mono text-xs text-ink/45">00{i + 1}</span>
+              </div>
+              <p className="font-serif mt-1.5 text-lg text-ink/80">{s.body}</p>
+            </StaggerItem>
+          ))}
+        </Stagger>
+        <Link href="/experience" className="btn-mono mt-6 w-full">
+          Check in now
+        </Link>
+      </section>
+
+      {/* Principles on warm paper */}
+      <section aria-labelledby="principles" className="paper-texture mt-24 py-20 sm:mt-28 sm:py-28">
+        <div className="mx-auto max-w-[1180px] px-4 sm:px-6">
+          <Reveal className="text-center">
+            <Headline id="principles" serif="Built for feeling" bold="Designed for listening" />
           </Reveal>
-          <Stagger as="ol" stagger={0.12} className="grid gap-4 self-start sm:grid-cols-3 md:gap-5">
-            {STEPS.map((s, i) => (
-              <StaggerItem
-                as="li"
-                key={s.title}
-                className="group relative overflow-hidden rounded-3xl bg-surface p-6 ring-1 ring-hairline transition duration-500 hover:-translate-y-1 hover:bg-surface-strong hover:ring-ink/15"
-              >
-                <span
-                  aria-hidden="true"
-                  className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-[var(--atmo-accent)] opacity-0 blur-3xl transition-opacity duration-700 group-hover:opacity-25"
-                />
-                <div className="relative flex items-center justify-between">
-                  <Doodle name={s.doodle} delay={0.3 + i * 0.25} className={`doodle-on-group h-11 w-11 ${s.colour}`} />
-                  <span className="font-display text-3xl text-ink/15 transition-colors duration-500 group-hover:text-ink/30">0{i + 1}</span>
-                </div>
-                <h3 className="relative mt-10 text-lg font-semibold">{s.title}</h3>
-                <p className="relative mt-2 text-sm leading-relaxed text-muted">{s.body}</p>
+          <Stagger stagger={0.1} className="mt-12 grid gap-4 md:grid-cols-3">
+            {PRINCIPLES.map((p) => (
+              <StaggerItem key={p.title} className="group rounded-2xl bg-white p-6 transition duration-500 hover:-translate-y-1 sm:p-8">
+                <p.icon size={36} strokeWidth={1.2} aria-hidden="true" className="transition-transform duration-500 group-hover:rotate-12" />
+                <h3 className="mt-14 text-lg font-semibold">{p.title}</h3>
+                <p className="font-serif mt-1.5 text-[17px] leading-snug text-ink/80">{p.body}</p>
               </StaggerItem>
             ))}
           </Stagger>
         </div>
       </section>
 
-      {/* Featured collections */}
-      <section aria-labelledby="collections" className="mx-auto mt-28 max-w-[1400px] px-4 sm:px-6">
-        <div className="mb-8 flex items-end justify-between gap-4">
-          <Reveal>
-            <ProximityGroup as="h2" id="collections" className="font-serif-roman flex items-center gap-3 text-5xl sm:text-6xl">
-              <span>
-                <ProxWords text="Rooms to step into" />
-              </span>
-              <Doodle name="swirl" delay={0.3} tilt={10} className="h-10 w-10 text-[#2f7a6b]" />
-            </ProximityGroup>
-            <p className="mt-3 text-muted">Collections shaped around a feeling, not a genre.</p>
-          </Reveal>
-          <Link href="/discover" className={`${btn.ghost} hidden sm:inline-flex`}>
-            All collections <ArrowRight size={16} />
-          </Link>
-        </div>
-        <FeaturedCollections ids={featured.map((c) => c.id)} />
+      {/* Originals feature */}
+      <section aria-labelledby="originals" className="mx-auto mt-24 max-w-[1180px] px-4 sm:mt-28 sm:px-6">
+        <Reveal className="grid items-center gap-8 rounded-3xl bg-[#f4f6fa] p-4 sm:p-6 md:grid-cols-2 md:gap-12">
+          <div className="halftone aspect-[4/3] rounded-2xl">
+            {/* eslint-disable-next-line @next/next/no-img-element -- local artwork */}
+            <img src="/artwork/mine-morning-light.jpg" alt="" loading="lazy" />
+          </div>
+          <div className="pb-4 md:pb-0 md:pr-6">
+            <h2 id="originals" className="text-xl font-semibold">
+              Why Sonora makes its own music
+            </h2>
+            <p className="font-serif mt-3 text-lg leading-snug text-ink/85">
+              Sonora Originals are written for a feeling first. Each track is filed by mood and by intensity, so
+              &ldquo;a little low&rdquo; and &ldquo;really low&rdquo; lead to different songs.
+            </p>
+            <Link href="/originals" className="btn-mono mt-6">
+              Listen to Originals
+            </Link>
+          </div>
+        </Reveal>
       </section>
 
-      {/* Care + CTA */}
-      <Reveal as="section" className="mx-auto mt-28 max-w-[1400px] px-4 sm:px-6">
-        <div className="relative overflow-hidden rounded-[2rem] bg-surface px-6 py-14 ring-1 ring-hairline sm:px-12 md:py-20">
-          <div aria-hidden="true" className="absolute -right-24 -top-24 h-80 w-80 animate-[drift-a_18s_ease-in-out_infinite] rounded-full bg-[var(--atmo-accent)] opacity-20 blur-3xl" />
-          <div aria-hidden="true" className="absolute -bottom-32 left-1/4 h-72 w-72 animate-[drift-b_24s_ease-in-out_infinite] rounded-full bg-[var(--warm)] opacity-10 blur-3xl" />
-          <WaveText length={260} seed={5} className="pointer-events-none absolute inset-x-0 bottom-3 overflow-hidden px-6 text-[44px] text-[var(--atmo-ink)] opacity-[0.14] sm:px-12" />
-          <Doodle name="heart" delay={0.4} float tilt={-12} className="absolute right-8 top-8 hidden h-12 w-12 text-[#c2416a] md:block" />
-          <Doodle name="smile" delay={0.7} float tilt={8} className="absolute bottom-8 right-[38%] hidden h-10 w-10 text-[var(--atmo-ink)] md:block" />
-          <Doodle name="notes" delay={1} float tilt={-6} className="absolute left-[46%] top-10 hidden h-9 w-9 text-[var(--warm)] lg:block" />
-          <div className="relative grid gap-10 md:grid-cols-[1.3fr_1fr] md:items-end">
-            <div>
-              <ProximityGroup as="h2" className="font-display text-5xl leading-[1.02] sm:text-6xl">
-                <ProxWords text="However today feels, there’s a sound for it." />
-              </ProximityGroup>
-              <p className="mt-5 max-w-lg text-muted">
-                Sonora is for listening, not diagnosing. It never stores what you write unless you ask it to, and it&rsquo;s not a
-                substitute for support from people or professionals.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3 md:justify-end">
-              <Link href="/experience" className={`${btn.primary} px-6 py-3 text-base`}>
-                Check in now <ArrowRight size={18} />
-              </Link>
-              <Link href="/privacy" className={`${btn.ghost} px-4 py-3`}>
-                How your words are handled
-              </Link>
-            </div>
-          </div>
+      {/* Rooms (collections) as a journal list */}
+      <section aria-labelledby="rooms" className="mx-auto mt-24 max-w-[1400px] px-4 sm:mt-28 sm:px-6">
+        <div className="flex flex-col items-center gap-6 md:flex-row md:justify-center md:gap-10">
+          <RoomsStamp className="w-56 shrink-0 md:w-64" />
+          <Reveal>
+            <ProximityGroup as="h2" id="rooms" className="font-headline text-[clamp(2rem,4vw,2.8rem)]">
+              <ProxWords text="Rooms to step into" />
+            </ProximityGroup>
+            <p className="font-serif text-lg text-ink/70">Collections shaped around a feeling, not a genre.</p>
+          </Reveal>
         </div>
-      </Reveal>
+        <Stagger as="ul" stagger={0.08} className="mx-auto mt-10 max-w-3xl border-t border-ink/12">
+          {rooms.map((c) => (
+            <StaggerItem as="li" key={c.id} className="border-b border-ink/12">
+              <Link href={`/collections/${c.id}`} className="group flex items-center gap-4 py-4 sm:gap-6">
+                <div className="w-28 shrink-0 overflow-hidden sm:w-44">
+                  <Cover
+                    seed={c.id}
+                    palette={c.palette}
+                    rounded="rounded-none"
+                    className="!aspect-[16/10] transition duration-700 ease-[var(--ease-soft)] group-hover:scale-105"
+                  />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-lg font-semibold leading-tight group-hover:underline group-hover:underline-offset-4 sm:text-xl">
+                    {c.title}
+                  </h3>
+                  <p className="mt-1 font-mono text-xs text-ink/55">
+                    {collectionTracks(c).length} tracks · {c.description.split(/[.,]/)[0].toLowerCase()}
+                  </p>
+                </div>
+              </Link>
+            </StaggerItem>
+          ))}
+        </Stagger>
+        <div className="mt-8 text-center">
+          <Link href="/discover" className="btn-mono">
+            All collections
+          </Link>
+        </div>
+      </section>
+
+      {/* An example check-in */}
+      <section aria-labelledby="example" className="mx-auto mt-24 max-w-[1180px] px-4 sm:mt-28 sm:px-6">
+        <Reveal className="grid items-center gap-8 md:grid-cols-2 md:gap-14">
+          <div className="halftone aspect-square [--ht-ink:#2f80ed]">
+            {/* eslint-disable-next-line @next/next/no-img-element -- local artwork */}
+            <img src="/artwork/mine-song-e84fcc.jpg" alt="" loading="lazy" />
+          </div>
+          <figure>
+            <p className="font-mono text-xs uppercase tracking-[0.14em] text-ink/55">Example check-in</p>
+            <span aria-hidden="true" className="font-serif mt-6 block text-6xl leading-none text-ink/25">
+              &ldquo;
+            </span>
+            <blockquote id="example" className="font-headline text-[clamp(1.7rem,3.2vw,2.5rem)] leading-[1.12]">
+              I&rsquo;ve had a stressful day and I can&rsquo;t seem to switch off.
+            </blockquote>
+            <figcaption className="mt-8 border-t border-ink/12 pt-4">
+              <p className="font-semibold">Sonora reads: stressed / overwhelmed</p>
+              <p className="font-serif text-lg text-ink/70">and offers music that helps you exhale, or keeps you company in it.</p>
+            </figcaption>
+          </figure>
+        </Reveal>
+      </section>
+
+      {/* Closing call to action */}
+      <section className="mt-24 bg-[#f4f6fa] py-20 text-center sm:mt-28 sm:py-24">
+        <Reveal className="mx-auto max-w-[1400px] px-4 sm:px-6">
+          <h2 className="font-headline text-[clamp(1.8rem,3.4vw,2.6rem)] leading-tight">Ready to hear how today feels?</h2>
+          <Link href="/experience" className="btn-mono mt-6">
+            Check in now
+          </Link>
+          <p className="font-serif mx-auto mt-6 max-w-md text-ink/65">
+            Sonora is for listening, not diagnosing.{" "}
+            <Link href="/privacy" className="tap relative underline underline-offset-2 hover:text-ink">
+              How your words are handled
+            </Link>
+          </p>
+        </Reveal>
+      </section>
     </>
   );
 }

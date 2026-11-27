@@ -7,7 +7,7 @@ vi.mock("next/font/google", () => {
   const loader = () => ({ className: "font-stub", variable: "--font-stub", style: { fontFamily: "stub" } });
   const fonts = [
     // layout.tsx
-    "Bricolage_Grotesque", "Caveat", "Imbue", "Instrument_Serif", "Wavefont",
+    "Bricolage_Grotesque", "Caveat", "Geist_Mono", "Imbue", "Instrument_Serif", "Source_Serif_4", "Wavefont",
     // components/motion/moodType.ts
     "Bodoni_Moda", "Cormorant_Garamond", "Fraunces", "Italiana", "Jost", "Ms_Madi", "Newsreader", "Playfair_Display",
   ];
